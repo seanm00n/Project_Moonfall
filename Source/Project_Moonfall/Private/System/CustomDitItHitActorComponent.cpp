@@ -31,6 +31,7 @@ UCustomDitItHitActorComponent::UCustomDitItHitActorComponent()
 void UCustomDitItHitActorComponent::BeginPlay()
 {
 	Super::BeginPlay();
+	MyWorldContextObject = GetOwner();
 }
 
 /*To every man is given the key to the gates of heaven.
@@ -548,47 +549,96 @@ void UCustomDitItHitActorComponent::AddHitToHitArray(TArray<FHitResult> HitArray
 
 			auto AbilitySystemComponent = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(Hit.GetActor());
 
-			if (AbilitySystemComponent && AbilitySystemComponent->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("State.Evade.Perfect"))))
-			{
-				
-				if (!MyActorsToIgnoreOnce.Contains(Hit.GetActor())) {
-					MyActorsToIgnoreOnce.AddUnique(Hit.GetActor());
-					MyActorsToIgnoreEvade.AddUnique(Hit.GetActor());
-					FGameplayEventData EventData;
-					EventData.Instigator = GetOwner();
-					UE_LOG(LogTemp, Warning, TEXT("State.Evade.Perfect is Matched"));
-					UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Hit.GetActor())
-						->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("State.Evade.Perfect.Success")), &EventData);
-				}
-			}
-			else if (AbilitySystemComponent && AbilitySystemComponent->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("State.Parrying"))))
-			{
 
-				if (!MyActorsToIgnoreOnce.Contains(Hit.GetActor())) {
-					MyActorsToIgnoreOnce.AddUnique(Hit.GetActor());
-					MyActorsToIgnoreParrying.AddUnique(Hit.GetActor());
-					FGameplayEventData EventData;
-					EventData.Instigator = GetOwner();
-					UE_LOG(LogTemp, Warning, TEXT("State.Parrying.Perfect is Matched"));
-					UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Hit.GetActor(),
-						FGameplayTag::RequestGameplayTag(FName("State.Parrying.Perfect.Success")),
-						EventData);
-					UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Hit.GetActor(),
-						FGameplayTag::RequestGameplayTag(FName("State.Parrying.Normal.Success")),
-						EventData);
+			if (canEvade()) {
+				if (isEvade(Hit.GetActor())) {
+					if (!MyActorsToIgnoreOnce.Contains(Hit.GetActor())) {
+						MyActorsToIgnoreOnce.AddUnique(Hit.GetActor());
+						MyActorsToIgnoreEvade.AddUnique(Hit.GetActor());
+					}
 				}
 			}
-			else {
+			if (canParrying()) {
+				if (isParrying(Hit.GetActor())) {
+					if (isPerfectParrying(Hit.GetActor())) {
+						FGameplayEventData EventData;
+						EventData.Instigator = GetOwner();
+						UE_LOG(LogTemp, Warning, TEXT("State.Parrying.Perfect is Matched"));
+						UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Hit.GetActor(),
+							FGameplayTag::RequestGameplayTag(FName("State.Parrying.Perfect.Success")),
+							EventData);
+					}
+					if (!MyActorsToIgnoreOnce.Contains(Hit.GetActor())) {
+						MyActorsToIgnoreOnce.AddUnique(Hit.GetActor());
+						MyActorsToIgnoreParrying.AddUnique(Hit.GetActor());
+					}
+				}
+			}
+			if (!MyActorsToIgnoreOnce.Contains(Hit.GetActor())) {
 				HitArray.Add(Hit);
 				UE_LOG(LogTemp, Warning, TEXT("State.Evade.Perfect is not Matched"));
-				OnItemAdded.Broadcast(Hit);
+				OnItemAdded.Broadcast(Hit);/*
+				AFightingCharacter* Character = Cast<AFightingCharacter*>(GetOwner());
+				AbilitySystemComponent->ApplyGameplayEffectToSelf(,
+					AbilitySystemComponent->MakeEffectContext())*/
 			}
-
 		}
 	}
 	for (AActor* IgnoreActor : MyActorsToIgnoreOnce) {
 		MyActorsToIgnore.AddUnique(IgnoreActor);
 	}
+}
+
+bool UCustomDitItHitActorComponent::isEvade(AActor* _target)
+{
+	auto AbilitySystemComponent = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(_target);
+	if (AbilitySystemComponent&& AbilitySystemComponent->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("State.Evade")))) {
+		//UE_LOG(LogTemp, Log, TEXT("isEvade"));
+		return true;
+	}
+	return false;
+}
+
+bool UCustomDitItHitActorComponent::canEvade()
+{
+	auto AbilitySystemComponent = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(this->GetOwner());
+	if (AbilitySystemComponent&&
+		AbilitySystemComponent->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("State.Attack.Able.Evade")))) {
+		//UE_LOG(LogTemp, Log, TEXT("CanEvade"));
+		return true;
+	}
+	return false;
+}
+
+bool UCustomDitItHitActorComponent::isParrying(AActor* _target)
+{
+	auto AbilitySystemComponent = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(_target);
+	if (AbilitySystemComponent&& AbilitySystemComponent->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("State.Parrying")))) {
+		//UE_LOG(LogTemp, Log, TEXT("isParrying"));
+		return true;
+	}
+	return false;
+}
+
+bool UCustomDitItHitActorComponent::isPerfectParrying(AActor* _target)
+{
+	auto AbilitySystemComponent = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(_target);
+	if (AbilitySystemComponent && AbilitySystemComponent->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("State.Parrying.Perfect")))) {
+		UE_LOG(LogTemp, Log, TEXT("isPerfectParrying"));
+		return true;
+	}
+	return false;
+}
+
+bool UCustomDitItHitActorComponent::canParrying()
+{
+	auto AbilitySystemComponent = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(this->GetOwner());
+	if (AbilitySystemComponent &&
+		AbilitySystemComponent->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("State.Attack.Able.Parrying")))) {
+		//UE_LOG(LogTemp, Log, TEXT("CanParrying"));
+		return true;
+	}
+	return false;
 }
 
 //FHitResult OnHitAdded(FHitResult LastHit)

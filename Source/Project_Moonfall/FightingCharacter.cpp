@@ -9,6 +9,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Components/GameFrameworkComponentManager.h"
 #include "Abilities/GSCAbilitySystemComponent.h"
+#include "System/CustomDitItHitActorComponent.h"
 
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
@@ -22,6 +23,8 @@ AFightingCharacter::AFightingCharacter(const FObjectInitializer& ObjectInitializ
 
 	AbilitySystemComponent = CreateDefaultSubobject<UGSCAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
 	AbilitySystemComponent->SetIsReplicated(true);
+
+	CustomDitItHitActorComponent = CreateDefaultSubobject<UCustomDitItHitActorComponent>(TEXT("CustomDitItHitComponent"));
 
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
@@ -76,6 +79,7 @@ void AFightingCharacter::SetupPlayerInputComponent(class UInputComponent* Player
 
 	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent)) {
 		EnhancedInputComponent->BindAction(MovementAction, ETriggerEvent::Triggered, this, &AFightingCharacter::Move);
+		EnhancedInputComponent->BindAction(RunAction, ETriggerEvent::Triggered, this, &AFightingCharacter::Run);
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AFightingCharacter::Look);
 	}
 
@@ -113,6 +117,11 @@ void AFightingCharacter::SetupPlayerInputComponent(class UInputComponent* Player
 UAbilitySystemComponent* AFightingCharacter::GetAbilitySystemComponent() const
 {
 	return AbilitySystemComponent;
+}
+
+UCustomDitItHitActorComponent* AFightingCharacter::GetDitItHit_Implementation() const
+{
+	return CustomDitItHitActorComponent;
 }
 
 void AFightingCharacter::PreInitializeComponents()
@@ -173,47 +182,47 @@ void AFightingCharacter::CheckAttackBuffer()
 void AFightingCharacter::AddInputToInputBuffer(FInputInfo _inputInfo)
 {
 	inputBuffer.Add(_inputInfo);
-	CheckInputBufferForCommand();
+	//CheckInputBufferForCommand();
 }
+//
+//void AFightingCharacter::CheckInputBufferForCommand()
+//{
+//	int correnctSequenceCounter = 0;
+//	for (auto skillCommand : skillCommands) {
+//		for (int commandInput = 0; commandInput < skillCommand.ketInputs.Num(); ++commandInput) {
+//			for (int input = 0; input < inputBuffer.Num(); ++input) {
+//				if (input + correnctSequenceCounter < inputBuffer.Num()) {
+//					if (inputBuffer[input + correnctSequenceCounter].inputName.Compare(skillCommand.ketInputs[commandInput].ToString()) == 0) {
+//						UE_LOG(LogTemp, Warning, TEXT("The Player added another input to the command sequence"));
+//						++correnctSequenceCounter;
+//						if (correnctSequenceCounter == skillCommand.ketInputs.Num()) {
+//							StartCommand(skillCommand.name);
+//						}
+//						break;
+//					}
+//					else {
+//						UE_LOG(LogTemp, Warning, TEXT("The Player broke the command sequence."));
+//						correnctSequenceCounter = 0;
+//					}
+//				}
+//				else {
+//					UE_LOG(LogTemp, Warning, TEXT("The Player is not yet finished with the Command sequence"));
+//					correnctSequenceCounter = 0;
+//				}
+//			}
+//		}
+//	}
+//}
 
-void AFightingCharacter::CheckInputBufferForCommand()
-{
-	int correnctSequenceCounter = 0;
-	for (auto skillCommand : skillCommands) {
-		for (int commandInput = 0; commandInput < skillCommand.ketInputs.Num(); ++commandInput) {
-			for (int input = 0; input < inputBuffer.Num(); ++input) {
-				if (input + correnctSequenceCounter < inputBuffer.Num()) {
-					if (inputBuffer[input + correnctSequenceCounter].inputName.Compare(skillCommand.ketInputs[commandInput].ToString()) == 0) {
-						UE_LOG(LogTemp, Warning, TEXT("The Player added another input to the command sequence"));
-						++correnctSequenceCounter;
-						if (correnctSequenceCounter == skillCommand.ketInputs.Num()) {
-							StartCommand(skillCommand.name);
-						}
-						break;
-					}
-					else {
-						UE_LOG(LogTemp, Warning, TEXT("The Player broke the command sequence."));
-						correnctSequenceCounter = 0;
-					}
-				}
-				else {
-					UE_LOG(LogTemp, Warning, TEXT("The Player is not yet finished with the Command sequence"));
-					correnctSequenceCounter = 0;
-				}
-			}
-		}
-	}
-}
-
-void AFightingCharacter::StartCommand(FString _commandName)
-{
-	for (int currentCommand = 0; currentCommand < skillCommands.Num(); ++currentCommand) {
-		if (_commandName.Compare(skillCommands[currentCommand].name) == 0) {
-			UE_LOG(LogTemp, Warning, TEXT("The Character is using the command : %s"), *_commandName);
-			hasUsedTempCommand = true;
-		}
-	}
-}
+//void AFightingCharacter::StartCommand(FString _commandName)
+//{
+//	for (int currentCommand = 0; currentCommand < skillCommands.Num(); ++currentCommand) {
+//		if (_commandName.Compare(skillCommands[currentCommand].name) == 0) {
+//			UE_LOG(LogTemp, Warning, TEXT("The Character is using the command : %s"), *_commandName);
+//			hasUsedTempCommand = true;
+//		}
+//	}
+//}
 
 void AFightingCharacter::RemoveInputFromInputBuffer()
 {
@@ -243,6 +252,7 @@ void AFightingCharacter::LookUpAtRate(float Rate)
 
 void AFightingCharacter::Move(const FInputActionValue& Value)
 {
+	GetCharacterMovement()->MaxWalkSpeed = 400.f;
 	const FVector2D MovementVector = Value.Get<FVector2D>();
 
 	const FRotator Rotation = Controller->GetControlRotation();
@@ -257,6 +267,23 @@ void AFightingCharacter::Move(const FInputActionValue& Value)
 	AddMovementInput(RightDirection, MovementVector.X);
 
 	
+}
+
+void AFightingCharacter::Run(const FInputActionValue& Value)
+{
+	GetCharacterMovement()->MaxWalkSpeed = 700.f;
+	const FVector2D MovementVector = Value.Get<FVector2D>();
+
+	const FRotator Rotation = Controller->GetControlRotation();
+	const FRotator YawRotation(0, Rotation.Yaw, 0);
+
+	// get forward vector
+	const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+	AddMovementInput(ForwardDirection, MovementVector.Y*1.5f);
+
+	// add movement in that direction
+	const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+	AddMovementInput(RightDirection, MovementVector.X * 1.5f);
 }
 
 void AFightingCharacter::Look(const FInputActionValue& Value)

@@ -183,7 +183,7 @@ class PROJECT_MOONFALL_API UCustomDitItHitActorComponent : public UActorComponen
 	TEnumAsByte<EDrawDebugTrace::Type> MyDrawDebugType = EDrawDebugTrace::Type::ForDuration;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = KismetTraceSettings, meta = (Tooltip = "Set by default to this. Do not change unless you know what it does."))
-	UObject* MyWorldContextObject = this; //this can be anything according to the documentation. best proposed solution is either "this" as in the actor component, or "getowner" as in the container.
+	UObject* MyWorldContextObject = GetOwner(); //this can be anything according to the documentation. best proposed solution is either "this" as in the actor component, or "getowner" as in the container.
 #pragma endregion
 
 
@@ -229,6 +229,21 @@ public:
 	UFUNCTION()
 	virtual void AddHitToHitArray(TArray<FHitResult> HitArrayToAdd);
 	////////////
+	//게임태그를 이용한 패링,회피 판별 함수들
+	UFUNCTION()
+	virtual bool isEvade(AActor* _target);
+
+	UFUNCTION()
+	virtual bool canEvade();
+
+	UFUNCTION()
+	virtual bool isParrying(AActor* _target);
+
+	UFUNCTION()
+	virtual bool isPerfectParrying(AActor* _target);
+	UFUNCTION()
+	virtual bool canParrying();
+
 
 	////////////
 	//Turns on or off the trace on tick and resets variables when toggled back on

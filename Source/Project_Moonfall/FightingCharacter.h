@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemInterface.h"
+#include "Public/System/DitItHitCompInterface.h"
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
 #include "FightingCharacter.generated.h"
@@ -23,16 +24,7 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Input)
 	TArray<FString> inputs;
 };
-USTRUCT(BlueprintType)
-struct FSkillCommand {
-	GENERATED_BODY();
-public:
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Input)
-	FString name;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Input)
-	TArray<FKey> ketInputs;
-};
 
 USTRUCT(BlueprintType)
 struct FInputInfo {
@@ -48,7 +40,7 @@ public:
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnMouseLeftEvent);
 
 UCLASS(config=Game, Blueprintable)
-class PROJECT_MOONFALL_API AFightingCharacter : public ACharacter, public IAbilitySystemInterface
+class PROJECT_MOONFALL_API AFightingCharacter : public ACharacter, public IAbilitySystemInterface ,public IDitItHitCompInterface
 {
 	GENERATED_BODY()
 
@@ -80,6 +72,7 @@ protected:
 
 
 	void Move(const FInputActionValue& Value);
+	void Run(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 
 	/** Called for forwards/backward input */
@@ -119,6 +112,8 @@ protected:
 	UPROPERTY(EditAnyWhere, Category = Input)
 	UInputAction* MovementAction;
 	UPROPERTY(EditAnyWhere, Category = Input)
+	UInputAction* RunAction;
+	UPROPERTY(EditAnyWhere, Category = Input)
 	UInputAction* LookAction;
 public:
 	/** Returns CameraBoom subobject **/
@@ -126,15 +121,23 @@ public:
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
+
+
 	UPROPERTY(EditDefaultsOnly, Category = "GAS Companion|Ability System")
 	EGameplayEffectReplicationMode ReplicationMode = EGameplayEffectReplicationMode::Mixed;
 
 	UPROPERTY(Category = Character, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	UGSCAbilitySystemComponent* AbilitySystemComponent;
 
-	//~ Begin IAbilitySystemInterface
+	UPROPERTY(Category = Character, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	class UCustomDitItHitActorComponent* CustomDitItHitActorComponent;
+
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
-	//~ End IAbilitySystemInterface
+
+	virtual UCustomDitItHitActorComponent* GetDitItHit_Implementation() const;
+
+	TSubclassOf<UGameplayEffect> CurrentDamageEffect;
+
 
 	//~ Begin AActor Interface
 	virtual void PreInitializeComponents() override;
@@ -173,11 +176,11 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void AddInputToInputBuffer(FInputInfo _inputInfo);
 
-	UFUNCTION(BlueprintCallable)
-	void CheckInputBufferForCommand();
+	//UFUNCTION(BlueprintCallable)
+	//void CheckInputBufferForCommand();
 
-	UFUNCTION(BlueprintCallable)
-	void StartCommand(FString _commandName);
+	//UFUNCTION(BlueprintCallable)
+	//void StartCommand(FString _commandName);
 
 	UFUNCTION(BlueprintCallable)
 	void RemoveInputFromInputBuffer();
@@ -187,8 +190,7 @@ public:
 	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category = Input)
 	TArray<FInputInfo> inputBuffer;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Input)
-	TArray<FSkillCommand> skillCommands;
+	
 
 	FTimerHandle inputBufferTimerHandle;
 
