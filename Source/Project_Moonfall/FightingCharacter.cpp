@@ -68,6 +68,8 @@ AFightingCharacter::AFightingCharacter(const FObjectInitializer& ObjectInitializ
 	tempCommand.inputs.Add("B");
 	tempCommand.inputs.Add("C");
 	hasUsedTempCommand = false;
+
+	isRun = false;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -253,7 +255,9 @@ void AFightingCharacter::LookUpAtRate(float Rate)
 void AFightingCharacter::Move(const FInputActionValue& Value)
 {
 	GetCharacterMovement()->MaxWalkSpeed = 400.f;
+	isRun = false;
 	const FVector2D MovementVector = Value.Get<FVector2D>();
+	MoveVector = Value.Get<FVector2D>();
 
 	const FRotator Rotation = Controller->GetControlRotation();
 	const FRotator YawRotation(0, Rotation.Yaw, 0);
@@ -272,7 +276,9 @@ void AFightingCharacter::Move(const FInputActionValue& Value)
 void AFightingCharacter::Run(const FInputActionValue& Value)
 {
 	GetCharacterMovement()->MaxWalkSpeed = 700.f;
+	isRun = true;
 	const FVector2D MovementVector = Value.Get<FVector2D>();
+	MoveVector = Value.Get<FVector2D>();
 
 	const FRotator Rotation = Controller->GetControlRotation();
 	const FRotator YawRotation(0, Rotation.Yaw, 0);
@@ -284,6 +290,7 @@ void AFightingCharacter::Run(const FInputActionValue& Value)
 	// add movement in that direction
 	const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 	AddMovementInput(RightDirection, MovementVector.X * 1.5f);
+	
 }
 
 void AFightingCharacter::Look(const FInputActionValue& Value)
