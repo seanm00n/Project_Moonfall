@@ -21,6 +21,11 @@
 			"TargetAllowList": [
 				"Editor"
 			]
+		},
+		{
+			"Name": "DidimoPlugin",
+			"Enabled": false,
+			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/product/290df7bb41d2451cbb7909931e412b18"
 		}
 	]
 }
