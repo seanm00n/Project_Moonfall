@@ -70,9 +70,8 @@ public:
 	FOnMouseLeftEvent OnMouseLeftEvent;
 
 	//Anim 블렌드 스페이스용 변수
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Input)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Input)
 	FVector2D MoveVector;
-	
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = State)
 	bool isRun;
