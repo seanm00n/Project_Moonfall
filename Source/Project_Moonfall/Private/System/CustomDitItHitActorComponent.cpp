@@ -549,6 +549,7 @@ void UCustomDitItHitActorComponent::AddHitToHitArray(TArray<FHitResult> HitArray
 
 			auto AbilitySystemComponent = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(Hit.GetActor());
 
+			UE_LOG(LogTemp, Warning, TEXT("State.Parrying.Perfect is Matched"));
 
 			if (canEvade()) {
 				if (isEvade(Hit.GetActor())) {
@@ -559,23 +560,23 @@ void UCustomDitItHitActorComponent::AddHitToHitArray(TArray<FHitResult> HitArray
 				}
 			}
 			if (canParrying()) {
-				if (isParrying(Hit.GetActor())) {
-					if (isPerfectParrying(Hit.GetActor())) {
-						FGameplayEventData EventData;
-						EventData.Instigator = GetOwner();
-						UE_LOG(LogTemp, Warning, TEXT("State.Parrying.Perfect is Matched"));
-						UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Hit.GetActor(),
-							FGameplayTag::RequestGameplayTag(FName("State.Parrying.Perfect.Success")),
-							EventData);
-					}
-					if (!MyActorsToIgnoreOnce.Contains(Hit.GetActor())) {
-						MyActorsToIgnoreOnce.AddUnique(Hit.GetActor());
-						MyActorsToIgnoreParrying.AddUnique(Hit.GetActor());
-					}
+				if (isPerfectParrying(Hit.GetActor())) {
+					FGameplayEventData EventData;
+					EventData.Instigator = GetOwner();
+					UE_LOG(LogTemp, Warning, TEXT("State.Parrying.Perfect is Matched"));
+					UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Hit.GetActor(),
+						FGameplayTag::RequestGameplayTag(FName("State.Parrying.Perfect.Success")),
+						EventData);
 				}
+				else if (!MyActorsToIgnoreOnce.Contains(Hit.GetActor())) {
+					MyActorsToIgnoreOnce.AddUnique(Hit.GetActor());
+					MyActorsToIgnoreParrying.AddUnique(Hit.GetActor());
+				}
+
 			}
 			if (!MyActorsToIgnoreOnce.Contains(Hit.GetActor())) {
 				HitArray.Add(Hit);
+				SendTagHitEvent_Lotus();
 				UE_LOG(LogTemp, Warning, TEXT("State.Evade.Perfect is not Matched"));
 				OnItemAdded.Broadcast(Hit);/*
 				AFightingCharacter* Character = Cast<AFightingCharacter*>(GetOwner());
@@ -639,6 +640,15 @@ bool UCustomDitItHitActorComponent::canParrying()
 		return true;
 	}
 	return false;
+}
+
+void UCustomDitItHitActorComponent::SendTagHitEvent_Lotus()
+{
+	FGameplayEventData EventData;
+	EventData.Instigator = GetOwner();
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetOwner()
+		, FGameplayTag::RequestGameplayTag(FName("Event.HitEvent.Lotus"))
+		, EventData);
 }
 
 //FHitResult OnHitAdded(FHitResult LastHit)

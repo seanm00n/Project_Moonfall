@@ -22,7 +22,7 @@ Now we should call them economical numbers.*/
 
 UENUM(BlueprintType)
 enum class ECustomKismetTraceType : uint8
-{
+{ 
 	LineTrace			UMETA(DisplayName = "Line Trace"),
 	BoxTrace			UMETA(DisplayName = "Box Trace"),
 	CapsuleTrace		UMETA(DisplayName = "Capsule Trace"),
@@ -241,10 +241,12 @@ public:
 
 	UFUNCTION()
 	virtual bool isPerfectParrying(AActor* _target);
+
 	UFUNCTION()
 	virtual bool canParrying();
 
-
+	UFUNCTION()
+	void SendTagHitEvent_Lotus();
 	////////////
 	//Turns on or off the trace on tick and resets variables when toggled back on
 public:

@@ -1,7 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "FightingGameMode.h"
-#include "FightingCharacter.h"
+#include "System/Character/FightingCharacter.h"
 #include "UObject/ConstructorHelpers.h"
 
 AFightingGameMode::AFightingGameMode()
