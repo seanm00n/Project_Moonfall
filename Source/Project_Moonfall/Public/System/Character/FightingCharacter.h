@@ -146,9 +146,8 @@ public:
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
-	virtual UCustomDitItHitActorComponent* GetDitItHit_Implementation() const;
+	virtual UCustomDitItHitActorComponent* GetDitItHit() const override;
 
-	// ICombatSystemInterface을(를) 통해 상속됨
 	virtual UCombatSystemComponent* GetCombatSystemComponent() const override;
 
 	TSubclassOf<UGameplayEffect> CurrentDamageEffect;

@@ -35,12 +35,11 @@ void UCombatGameplayAbility_MeleeBase::OnCombatReceived(FGameplayEventData Event
 {
 
 	UE_LOG(LogTemp, Log, TEXT("OnCombatReceived 2"));
-	if (isEventReceived_Combat) {
-		AActor* AvatarActor = GetAvatarActorFromActorInfo();
-		auto AbilitySystemComponent = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(AvatarActor);
-		if (AbilitySystemComponent) {
-			auto context = AbilitySystemComponent->MakeEffectContext();
-			AbilitySystemComponent->ApplyGameplayEffectToSelf(ReactEffect->GetDefaultObject<UGameplayEffect>(), 0.0, context);
-		}
+	AActor* AvatarActor = GetAvatarActorFromActorInfo();
+	auto AbilitySystemComponent = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(AvatarActor);
+	if (AbilitySystemComponent) {
+		auto context = AbilitySystemComponent->MakeEffectContext();
+		AbilitySystemComponent->ApplyGameplayEffectToSelf(ReactEffect->GetDefaultObject<UGameplayEffect>(), 0.0, context);
 	}
+
 }

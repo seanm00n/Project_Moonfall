@@ -3,6 +3,7 @@
 
 #include "System/CombatGameplayAbility.h"
 #include "Abilities/GSCBlueprintFunctionLibrary.h"
+#include "AbilitySystemBlueprintLibrary.h"
 #include "Abilities/Tasks/GSCTask_PlayMontageWaitForEvent.h"
 #include "System/CombatSystemComponent.h"
 
@@ -33,3 +34,17 @@ void UCombatGameplayAbility::ActivateAbility(const FGameplayAbilitySpecHandle Ha
 
 }
 
+void UCombatGameplayAbility::OnCombatReceived(FGameplayEventData EventData)
+{
+
+	UE_LOG(LogTemp, Log, TEXT("OnCombatReceived 2"));
+	AActor* AvatarActor = GetAvatarActorFromActorInfo();
+	auto AbilitySystemComponent = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(AvatarActor);
+	if (AbilitySystemComponent) {
+		if (ReactEffect) {
+			auto context = AbilitySystemComponent->MakeEffectContext();
+			AbilitySystemComponent->ApplyGameplayEffectToSelf(ReactEffect->GetDefaultObject<UGameplayEffect>(), 0.0, context);
+		}
+	}
+
+}

@@ -37,6 +37,9 @@ protected:
 
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 
+	UFUNCTION(BlueprintCallable)
+	void OnCombatReceived(FGameplayEventData EventData);
+
 	/*UFUNCTION(BlueprintCallable)
 	void OnMontageCancelled(FGameplayTag EventTag, FGameplayEventData EventData);
 

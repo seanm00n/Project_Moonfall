@@ -123,7 +123,7 @@ UAbilitySystemComponent* AFightingCharacter::GetAbilitySystemComponent() const
 	return AbilitySystemComponent;
 }
 
-UCustomDitItHitActorComponent* AFightingCharacter::GetDitItHit_Implementation() const
+UCustomDitItHitActorComponent* AFightingCharacter::GetDitItHit() const
 {
 	return CustomDitItHitActorComponent;
 }

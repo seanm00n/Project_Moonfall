@@ -268,7 +268,12 @@ public:
 	UFUNCTION()
 	virtual void GetSocket_t0();
 	////////////
+public:
+	UFUNCTION(BlueprintPure, Category = Combat)
+	static UCustomDitItHitActorComponent* GetCustomDitItHitActorComponent(const AActor* Actor);
+private:
 
+	static UCustomDitItHitActorComponent* GetCustomDitItHitActorComponentFromActor(const AActor* Actor, bool LookForComponent = true);
 };
 
 /*I don't know what's the matter with people:

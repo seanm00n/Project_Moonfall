@@ -23,6 +23,6 @@ class PROJECT_MOONFALL_API IDitItHitCompInterface
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Dit It Hit")
-	class UCustomDitItHitActorComponent* GetDitItHit() const;
+
+	virtual class UCustomDitItHitActorComponent* GetDitItHit() const = 0;
 };

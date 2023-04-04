@@ -45,6 +45,7 @@ void UCombatSystemComponent::TakeAttack(TSubclassOf<UGameplayEffect> AttackEffec
 		AbilitySystemComponent->ApplyGameplayEffectToSelf(AttackEffect->GetDefaultObject<UGameplayEffect>(), 0.f, context);
 	if (ReactAbility)
 		AbilitySystemComponent->GiveAbility(ReactAbility->GetDefaultObject<UGameplayAbility>());
+	UE_LOG(LogTemp, Warning, TEXT("TakeAttack"));
 }
 
 void UCombatSystemComponent::AttackInfo(const FAttackInfo& AttackInfo)

@@ -29,9 +29,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Combat|Effect")
 	TSubclassOf<UGameplayEffect> ReactEffect;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Combat")
-	bool isEventReceived_Combat;
-
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 	
 	UFUNCTION(BlueprintCallable)

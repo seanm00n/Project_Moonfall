@@ -9,6 +9,7 @@ which is just another way of saying that you can't.*/
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemGlobals.h"
+#include "System/DitItHitCompInterface.h"
 #include "System/Attributes/LotusAttributeSet.h"
 #include "Kismet/KismetSystemLibrary.h"
 
@@ -503,14 +504,15 @@ void UCustomDitItHitActorComponent::ToggleTraceCheck(bool bTrace)
 		ClearHitArray();
 		ClearSocketLocationMap();
 		GetSocket_t0();
-		ModuloNumber = 0;
+		ModuloNumber = 0; 
+		for (AActor* IgnoreActor : MyActorsToIgnoreOnce) {
+			MyActorsToIgnore.Remove(IgnoreActor);
+		}
+		MyActorsToIgnoreOnce.Empty();
+		MyActorsToIgnoreEvade.Empty();
+		MyActorsToIgnoreParrying.Empty();
 	}
-	for (AActor* IgnoreActor : MyActorsToIgnoreOnce) {
-		MyActorsToIgnore.Remove(IgnoreActor);
-	}
-	MyActorsToIgnoreOnce.Empty();
-	MyActorsToIgnoreEvade.Empty();
-	MyActorsToIgnoreParrying.Empty();
+	
 	CanTrace = bTrace;
 }
 
@@ -540,6 +542,32 @@ void UCustomDitItHitActorComponent::GetSocket_t0()
 	}
 }
 
+UCustomDitItHitActorComponent* UCustomDitItHitActorComponent::GetCustomDitItHitActorComponent(const AActor* Actor)
+{
+	return GetCustomDitItHitActorComponentFromActor(Actor);
+}
+
+UCustomDitItHitActorComponent* UCustomDitItHitActorComponent::GetCustomDitItHitActorComponentFromActor(const AActor* Actor, bool LookForComponent)
+{
+	if (Actor == nullptr)
+	{
+		return nullptr;
+	}
+
+	const IDitItHitCompInterface* CSI = Cast<IDitItHitCompInterface>(Actor);
+	if (CSI)
+	{
+		return CSI->GetDitItHit();
+	}
+
+	if (LookForComponent)
+	{
+		// Fall back to a component search to better support BP-only actors
+		return Actor->FindComponentByClass<UCustomDitItHitActorComponent>();
+	}
+	return nullptr;
+}
+
 void UCustomDitItHitActorComponent::AddHitToHitArray(TArray<FHitResult> HitArrayToAdd)
 {
 	for (const auto& Hit : HitArrayToAdd)
@@ -549,7 +577,6 @@ void UCustomDitItHitActorComponent::AddHitToHitArray(TArray<FHitResult> HitArray
 
 			auto AbilitySystemComponent = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(Hit.GetActor());
 
-			UE_LOG(LogTemp, Warning, TEXT("State.Parrying.Perfect is Matched"));
 
 			if (canEvade()) {
 				if (isEvade(Hit.GetActor())) {
@@ -566,13 +593,12 @@ void UCustomDitItHitActorComponent::AddHitToHitArray(TArray<FHitResult> HitArray
 					UE_LOG(LogTemp, Warning, TEXT("State.Parrying.Perfect is Matched"));
 					UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Hit.GetActor(),
 						FGameplayTag::RequestGameplayTag(FName("State.Parrying.Perfect.Success")),
-						EventData);
+						EventData); 
+					if (!MyActorsToIgnoreOnce.Contains(Hit.GetActor())) {
+						MyActorsToIgnoreOnce.AddUnique(Hit.GetActor());
+						MyActorsToIgnoreParrying.AddUnique(Hit.GetActor());
+					}
 				}
-				else if (!MyActorsToIgnoreOnce.Contains(Hit.GetActor())) {
-					MyActorsToIgnoreOnce.AddUnique(Hit.GetActor());
-					MyActorsToIgnoreParrying.AddUnique(Hit.GetActor());
-				}
-
 			}
 			if (!MyActorsToIgnoreOnce.Contains(Hit.GetActor())) {
 				HitArray.Add(Hit);
@@ -614,7 +640,8 @@ bool UCustomDitItHitActorComponent::canEvade()
 bool UCustomDitItHitActorComponent::isParrying(AActor* _target)
 {
 	auto AbilitySystemComponent = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(_target);
-	if (AbilitySystemComponent&& AbilitySystemComponent->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("State.Parrying")))) {
+	if (AbilitySystemComponent &&
+		AbilitySystemComponent->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("State.Parrying")))) {
 		//UE_LOG(LogTemp, Log, TEXT("isParrying"));
 		return true;
 	}
@@ -624,8 +651,9 @@ bool UCustomDitItHitActorComponent::isParrying(AActor* _target)
 bool UCustomDitItHitActorComponent::isPerfectParrying(AActor* _target)
 {
 	auto AbilitySystemComponent = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(_target);
-	if (AbilitySystemComponent && AbilitySystemComponent->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("State.Parrying.Perfect")))) {
-		UE_LOG(LogTemp, Log, TEXT("isPerfectParrying"));
+	if (AbilitySystemComponent && 
+		AbilitySystemComponent->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("State.Parrying.Perfect")))) {
+		UE_LOG(LogTemp, Warning, TEXT("isPerfectParrying"));
 		return true;
 	}
 	return false;
