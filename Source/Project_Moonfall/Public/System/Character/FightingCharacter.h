@@ -6,9 +6,9 @@
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemInterface.h"
 #include "System/DitItHitCompInterface.h"
+#include "System/CombatSystemInterface.h"
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
-#include "System/CombatSystemInterface.h"
 #include "FightingCharacter.generated.h"
 
 class UGSCAbilitySystemComponent;

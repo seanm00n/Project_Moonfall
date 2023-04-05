@@ -59,7 +59,7 @@ public:
 	FPreAttack OnPreAttack;
 
 	UFUNCTION(BlueprintCallable)
-	void TakeAttack(TSubclassOf<UGameplayEffect> AttackEffect, TSubclassOf<UGameplayAbility> ReactAbility);
+	void TakeAttack(AActor* Target,TSubclassOf<UGameplayEffect> AttackEffect, TSubclassOf<UGameplayAbility> ReactAbility);
 
 	UFUNCTION(BlueprintCallable)
 	void AttackInfo(const FAttackInfo& AttackInfo);

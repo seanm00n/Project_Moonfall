@@ -38,15 +38,20 @@ void UCombatSystemComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	// ...
 }
 
-void UCombatSystemComponent::TakeAttack(TSubclassOf<UGameplayEffect> AttackEffect, TSubclassOf<UGameplayAbility> ReactAbility)
+void UCombatSystemComponent::TakeAttack(AActor* Target, TSubclassOf<UGameplayEffect> AttackEffect, TSubclassOf<UGameplayAbility> ReactAbility)
 {
 	auto context = AbilitySystemComponent->MakeEffectContext();
-	if (AttackEffect)
-		AbilitySystemComponent->ApplyGameplayEffectToSelf(AttackEffect->GetDefaultObject<UGameplayEffect>(), 0.f, context);
-	if (ReactAbility)
-		AbilitySystemComponent->GiveAbility(ReactAbility->GetDefaultObject<UGameplayAbility>());
-	UE_LOG(LogTemp, Warning, TEXT("TakeAttack"));
+	auto TargetAbilitySystemComponent = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Target);
+	if (TargetAbilitySystemComponent) {
+		if (AttackEffect)
+			TargetAbilitySystemComponent->ApplyGameplayEffectToSelf(AttackEffect.GetDefaultObject(), 0.f, context);
+		if (ReactAbility)
+			TargetAbilitySystemComponent->GiveAbility(ReactAbility.GetDefaultObject());
+
+	}
 }
+
+
 
 void UCombatSystemComponent::AttackInfo(const FAttackInfo& AttackInfo)
 {
@@ -88,6 +93,6 @@ UCombatSystemComponent* UCombatSystemComponent::GetCombatSystemComponent(const A
 
 void UCombatSystemComponent::BindTakeAttack()
 {
-	TakeAttack(CurrentAttackEffect, CurrentReactAbility);
+	//TakeAttack(CurrentAttackEffect, CurrentReactAbility);
 }
 
