@@ -47,7 +47,6 @@ void UCombatSystemComponent::TakeAttack(AActor* Target, TSubclassOf<UGameplayEff
 			TargetAbilitySystemComponent->ApplyGameplayEffectToSelf(AttackEffect.GetDefaultObject(), 0.f, context);
 		if (ReactAbility)
 			TargetAbilitySystemComponent->GiveAbility(ReactAbility.GetDefaultObject());
-
 	}
 }
 
