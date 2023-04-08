@@ -21,6 +21,8 @@ void UCombatGameplayAbility_MeleeBase::ActivateAbility(const FGameplayAbilitySpe
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
 	CombatSystemComponent->AttackInfo(AttackEffect, ReactAbility);
+
+	OnActivateCombatAbility.Broadcast();
 	/*FGameplayEventData eventData;
 	eventData.Instigator=AvatarActor;
 	UAbilityTask_WaitGameplayEvent* Task = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this, FGameplayTag::RequestGameplayTag(FName("Event.FinishAct")), nullptr, true);

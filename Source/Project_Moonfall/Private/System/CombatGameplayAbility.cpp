@@ -31,6 +31,9 @@ void UCombatGameplayAbility::ActivateAbility(const FGameplayAbilitySpecHandle Ha
 		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
 		return;
 	}
+	CombatSystemComponent->AttackInfo(AttackEffect, ReactAbility);
+
+	OnActivateCombatAbility.Broadcast();
 
 }
 

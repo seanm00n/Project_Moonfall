@@ -9,12 +9,20 @@
 /**
  * 
  */
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnActivateCombatAbilityMelee);
+
 class UCombatSystemComponent;
 
 UCLASS()
 class PROJECT_MOONFALL_API UCombatGameplayAbility_MeleeBase : public UGSCGameplayAbility_MeleeBase
 {
 	GENERATED_BODY()
+public:
+
+	UPROPERTY(BlueprintAssignable)
+	FOnActivateCombatAbilityMelee OnActivateCombatAbility;
+
 protected:
 
 	UPROPERTY()

@@ -9,8 +9,11 @@
 /**
  * 
  */
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnActivateCombatAbility);
 
 class UCombatSystemComponent;
+
+
 UCLASS()
 class PROJECT_MOONFALL_API UCombatGameplayAbility : public UGSCGameplayAbility
 {
@@ -18,6 +21,8 @@ class PROJECT_MOONFALL_API UCombatGameplayAbility : public UGSCGameplayAbility
 public:
 	UCombatGameplayAbility();
 
+	UPROPERTY(BlueprintAssignable)
+	FOnActivateCombatAbility OnActivateCombatAbility;
 protected:
 
 	UPROPERTY()
