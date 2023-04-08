@@ -9,7 +9,9 @@ which is just another way of saying that you can't.*/
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemGlobals.h"
+#include "System/DitItHitCompInterface.h"
 #include "System/Attributes/LotusAttributeSet.h"
+#include "System/CombatSystemComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 
 
@@ -22,6 +24,7 @@ UCustomDitItHitActorComponent::UCustomDitItHitActorComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
+	
 
 	// ...
 }
@@ -32,6 +35,7 @@ void UCustomDitItHitActorComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	MyWorldContextObject = GetOwner();
+	OnItemAdded.AddDynamic(this, &UCustomDitItHitActorComponent::ItemAdded);
 }
 
 /*To every man is given the key to the gates of heaven.
@@ -503,14 +507,15 @@ void UCustomDitItHitActorComponent::ToggleTraceCheck(bool bTrace)
 		ClearHitArray();
 		ClearSocketLocationMap();
 		GetSocket_t0();
-		ModuloNumber = 0;
+		ModuloNumber = 0; 
+		for (AActor* IgnoreActor : MyActorsToIgnoreOnce) {
+			MyActorsToIgnore.Remove(IgnoreActor);
+		}
+		MyActorsToIgnoreOnce.Empty();
+		MyActorsToIgnoreEvade.Empty();
+		MyActorsToIgnoreParrying.Empty();
 	}
-	for (AActor* IgnoreActor : MyActorsToIgnoreOnce) {
-		MyActorsToIgnore.Remove(IgnoreActor);
-	}
-	MyActorsToIgnoreOnce.Empty();
-	MyActorsToIgnoreEvade.Empty();
-	MyActorsToIgnoreParrying.Empty();
+	
 	CanTrace = bTrace;
 }
 
@@ -540,6 +545,32 @@ void UCustomDitItHitActorComponent::GetSocket_t0()
 	}
 }
 
+UCustomDitItHitActorComponent* UCustomDitItHitActorComponent::GetCustomDitItHitActorComponent(const AActor* Actor)
+{
+	return GetCustomDitItHitActorComponentFromActor(Actor);
+}
+
+UCustomDitItHitActorComponent* UCustomDitItHitActorComponent::GetCustomDitItHitActorComponentFromActor(const AActor* Actor, bool LookForComponent)
+{
+	if (Actor == nullptr)
+	{
+		return nullptr;
+	}
+
+	const IDitItHitCompInterface* CSI = Cast<IDitItHitCompInterface>(Actor);
+	if (CSI)
+	{
+		return CSI->GetDitItHit();
+	}
+
+	if (LookForComponent)
+	{
+		// Fall back to a component search to better support BP-only actors
+		return Actor->FindComponentByClass<UCustomDitItHitActorComponent>();
+	}
+	return nullptr;
+}
+
 void UCustomDitItHitActorComponent::AddHitToHitArray(TArray<FHitResult> HitArrayToAdd)
 {
 	for (const auto& Hit : HitArrayToAdd)
@@ -559,15 +590,13 @@ void UCustomDitItHitActorComponent::AddHitToHitArray(TArray<FHitResult> HitArray
 				}
 			}
 			if (canParrying()) {
-				if (isParrying(Hit.GetActor())) {
-					if (isPerfectParrying(Hit.GetActor())) {
-						FGameplayEventData EventData;
-						EventData.Instigator = GetOwner();
-						UE_LOG(LogTemp, Warning, TEXT("State.Parrying.Perfect is Matched"));
-						UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Hit.GetActor(),
-							FGameplayTag::RequestGameplayTag(FName("State.Parrying.Perfect.Success")),
-							EventData);
-					}
+				if (isPerfectParrying(Hit.GetActor())) {
+					FGameplayEventData EventData;
+					EventData.Instigator = GetOwner();
+					UE_LOG(LogTemp, Warning, TEXT("State.Parrying.Perfect is Matched"));
+					UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Hit.GetActor(),
+						FGameplayTag::RequestGameplayTag(FName("State.Parrying.Perfect.Success")),
+						EventData); 
 					if (!MyActorsToIgnoreOnce.Contains(Hit.GetActor())) {
 						MyActorsToIgnoreOnce.AddUnique(Hit.GetActor());
 						MyActorsToIgnoreParrying.AddUnique(Hit.GetActor());
@@ -576,6 +605,7 @@ void UCustomDitItHitActorComponent::AddHitToHitArray(TArray<FHitResult> HitArray
 			}
 			if (!MyActorsToIgnoreOnce.Contains(Hit.GetActor())) {
 				HitArray.Add(Hit);
+				SendTagHitEvent_Lotus();
 				UE_LOG(LogTemp, Warning, TEXT("State.Evade.Perfect is not Matched"));
 				OnItemAdded.Broadcast(Hit);/*
 				AFightingCharacter* Character = Cast<AFightingCharacter*>(GetOwner());
@@ -613,7 +643,8 @@ bool UCustomDitItHitActorComponent::canEvade()
 bool UCustomDitItHitActorComponent::isParrying(AActor* _target)
 {
 	auto AbilitySystemComponent = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(_target);
-	if (AbilitySystemComponent&& AbilitySystemComponent->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("State.Parrying")))) {
+	if (AbilitySystemComponent &&
+		AbilitySystemComponent->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("State.Parrying")))) {
 		//UE_LOG(LogTemp, Log, TEXT("isParrying"));
 		return true;
 	}
@@ -623,8 +654,9 @@ bool UCustomDitItHitActorComponent::isParrying(AActor* _target)
 bool UCustomDitItHitActorComponent::isPerfectParrying(AActor* _target)
 {
 	auto AbilitySystemComponent = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(_target);
-	if (AbilitySystemComponent && AbilitySystemComponent->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("State.Parrying.Perfect")))) {
-		UE_LOG(LogTemp, Log, TEXT("isPerfectParrying"));
+	if (AbilitySystemComponent && 
+		AbilitySystemComponent->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("State.Parrying.Perfect")))) {
+		UE_LOG(LogTemp, Warning, TEXT("isPerfectParrying"));
 		return true;
 	}
 	return false;
@@ -639,6 +671,27 @@ bool UCustomDitItHitActorComponent::canParrying()
 		return true;
 	}
 	return false;
+}
+
+void UCustomDitItHitActorComponent::ItemAdded(FHitResult LastItem)
+{
+	UE_LOG(LogTemp, Warning, TEXT("ItemAdded"));
+	auto hitActor = LastItem.GetActor();
+	auto CombatSystemComponent = UCombatSystemComponent::GetCombatSystemComponent(GetOwner());
+	auto TargetAbilitySystemComponent = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(hitActor);
+	if (TargetAbilitySystemComponent) {
+		if (CombatSystemComponent)
+			CombatSystemComponent->TakeAttackUseCurrent(hitActor);
+	}
+}
+
+void UCustomDitItHitActorComponent::SendTagHitEvent_Lotus()
+{
+	FGameplayEventData EventData;
+	EventData.Instigator = GetOwner();
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetOwner()
+		, FGameplayTag::RequestGameplayTag(FName("Event.HitEvent.Lotus"))
+		, EventData);
 }
 
 //FHitResult OnHitAdded(FHitResult LastHit)

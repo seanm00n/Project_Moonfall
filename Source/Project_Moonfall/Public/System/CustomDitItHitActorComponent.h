@@ -22,7 +22,7 @@ Now we should call them economical numbers.*/
 
 UENUM(BlueprintType)
 enum class ECustomKismetTraceType : uint8
-{
+{ 
 	LineTrace			UMETA(DisplayName = "Line Trace"),
 	BoxTrace			UMETA(DisplayName = "Box Trace"),
 	CapsuleTrace		UMETA(DisplayName = "Capsule Trace"),
@@ -231,20 +231,26 @@ public:
 	////////////
 	//게임태그를 이용한 패링,회피 판별 함수들
 	UFUNCTION()
-	virtual bool isEvade(AActor* _target);
+	bool isEvade(AActor* _target);
 
 	UFUNCTION()
-	virtual bool canEvade();
+	bool canEvade();
 
 	UFUNCTION()
-	virtual bool isParrying(AActor* _target);
+	bool isParrying(AActor* _target);
 
 	UFUNCTION()
-	virtual bool isPerfectParrying(AActor* _target);
+	bool isPerfectParrying(AActor* _target);
+
 	UFUNCTION()
-	virtual bool canParrying();
+	bool canParrying();
 
+	UFUNCTION()
+	void ItemAdded(FHitResult LastItem);
+	
 
+	UFUNCTION()
+	void SendTagHitEvent_Lotus();
 	////////////
 	//Turns on or off the trace on tick and resets variables when toggled back on
 public:
@@ -266,7 +272,12 @@ public:
 	UFUNCTION()
 	virtual void GetSocket_t0();
 	////////////
+public:
+	UFUNCTION(BlueprintPure, Category = Combat)
+	static UCustomDitItHitActorComponent* GetCustomDitItHitActorComponent(const AActor* Actor);
+private:
 
+	static UCustomDitItHitActorComponent* GetCustomDitItHitActorComponentFromActor(const AActor* Actor, bool LookForComponent = true);
 };
 
 /*I don't know what's the matter with people:
