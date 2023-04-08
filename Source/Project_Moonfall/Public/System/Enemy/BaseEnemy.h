@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-
+	
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemInterface.h"
 #include "System/DitItHitCompInterface.h"
@@ -37,6 +37,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "GAS Companion|Ability System")
 	EGameplayEffectReplicationMode ReplicationMode = EGameplayEffectReplicationMode::Mixed;
+
+	UPROPERTY(Category = Character, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	class UGSCCoreComponent* GSCCoreComponent;
 
 	UPROPERTY(Category = Character, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	class UGSCAbilitySystemComponent* AbilitySystemComponent;

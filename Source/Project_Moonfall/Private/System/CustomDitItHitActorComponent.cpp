@@ -11,6 +11,7 @@ which is just another way of saying that you can't.*/
 #include "AbilitySystemGlobals.h"
 #include "System/DitItHitCompInterface.h"
 #include "System/Attributes/LotusAttributeSet.h"
+#include "System/CombatSystemComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 
 
@@ -23,6 +24,7 @@ UCustomDitItHitActorComponent::UCustomDitItHitActorComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
+	
 
 	// ...
 }
@@ -33,6 +35,7 @@ void UCustomDitItHitActorComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	MyWorldContextObject = GetOwner();
+	OnItemAdded.AddDynamic(this, &UCustomDitItHitActorComponent::ItemAdded);
 }
 
 /*To every man is given the key to the gates of heaven.
@@ -668,6 +671,18 @@ bool UCustomDitItHitActorComponent::canParrying()
 		return true;
 	}
 	return false;
+}
+
+void UCustomDitItHitActorComponent::ItemAdded(FHitResult LastItem)
+{
+	UE_LOG(LogTemp, Warning, TEXT("ItemAdded"));
+	auto hitActor = LastItem.GetActor();
+	auto CombatSystemComponent = UCombatSystemComponent::GetCombatSystemComponent(GetOwner());
+	auto TargetAbilitySystemComponent = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(hitActor);
+	if (TargetAbilitySystemComponent) {
+		if (CombatSystemComponent)
+			CombatSystemComponent->TakeAttackUseCurrent(hitActor);
+	}
 }
 
 void UCustomDitItHitActorComponent::SendTagHitEvent_Lotus()

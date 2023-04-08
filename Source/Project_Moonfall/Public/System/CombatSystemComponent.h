@@ -60,6 +60,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void TakeAttack(AActor* Target,TSubclassOf<UGameplayEffect> AttackEffect, TSubclassOf<UGameplayAbility> ReactAbility);
+	UFUNCTION(BlueprintCallable)
+	void TakeAttackUseCurrent(AActor* Target);
 
 	UFUNCTION(BlueprintCallable)
 	void AttackInfo(const FAttackInfo& AttackInfo);

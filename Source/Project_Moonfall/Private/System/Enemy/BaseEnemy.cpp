@@ -3,6 +3,7 @@
 
 #include "System/Enemy/BaseEnemy.h"
 
+#include "Components/GSCCoreComponent.h"
 #include "Abilities/GSCAbilitySystemComponent.h"
 #include "System/CustomDitItHitActorComponent.h"
 #include "System/CombatSystemComponent.h"
@@ -12,6 +13,7 @@ ABaseEnemy::ABaseEnemy()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	GSCCoreComponent = CreateDefaultSubobject<UGSCCoreComponent>(TEXT("GSCCoreComponent"));
 
 	AbilitySystemComponent = CreateDefaultSubobject<UGSCAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
 	AbilitySystemComponent->SetIsReplicated(true);

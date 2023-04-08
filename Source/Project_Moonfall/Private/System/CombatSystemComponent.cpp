@@ -51,6 +51,11 @@ void UCombatSystemComponent::TakeAttack(AActor* Target, TSubclassOf<UGameplayEff
 	}
 }
 
+void UCombatSystemComponent::TakeAttackUseCurrent(AActor* Target)
+{
+	TakeAttack(Target, CurrentAttackEffect, CurrentReactAbility);
+}
+
 
 
 void UCombatSystemComponent::AttackInfo(const FAttackInfo& AttackInfo)

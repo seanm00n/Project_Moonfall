@@ -231,19 +231,23 @@ public:
 	////////////
 	//게임태그를 이용한 패링,회피 판별 함수들
 	UFUNCTION()
-	virtual bool isEvade(AActor* _target);
+	bool isEvade(AActor* _target);
 
 	UFUNCTION()
-	virtual bool canEvade();
+	bool canEvade();
 
 	UFUNCTION()
-	virtual bool isParrying(AActor* _target);
+	bool isParrying(AActor* _target);
 
 	UFUNCTION()
-	virtual bool isPerfectParrying(AActor* _target);
+	bool isPerfectParrying(AActor* _target);
 
 	UFUNCTION()
-	virtual bool canParrying();
+	bool canParrying();
+
+	UFUNCTION()
+	void ItemAdded(FHitResult LastItem);
+	
 
 	UFUNCTION()
 	void SendTagHitEvent_Lotus();
