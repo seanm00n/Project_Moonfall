@@ -64,10 +64,6 @@
 		{
 			"Name": "AnimationWarping",
 			"Enabled": true
-		},
-		{
-			"Name": "AbilitySystemGameFeatureActions",
-			"Enabled": true
 		}
 	]
 }
