@@ -54,14 +54,16 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "CombatSystem")
 	FCombatEnd OnCombatEnd;
 	UPROPERTY(BlueprintAssignable, Category = "CombatSystem")
-	FPostAttack OnPostAttack;
+	FPostAttack OnPostTakeAttack;
 	UPROPERTY(BlueprintAssignable, Category = "CombatSystem")
-	FPreAttack OnPreAttack;
+	FPreAttack OnPreTakeAttack;
 
 	UFUNCTION(BlueprintCallable)
 	void TakeAttack(AActor* Target,TSubclassOf<UGameplayEffect> AttackEffect, TSubclassOf<UGameplayAbility> ReactAbility);
 	UFUNCTION(BlueprintCallable)
 	void TakeAttackUseCurrent(AActor* Target);
+	UFUNCTION(BlueprintCallable)
+	void TakeAttackOnlyEffect(AActor* Target);
 
 	UFUNCTION(BlueprintCallable)
 	void AttackInfo(const FAttackInfo& AttackInfo);
