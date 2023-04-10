@@ -13,9 +13,9 @@
 - 
 
 # Issue&Solution
-## Issue : 
+### Issue : 
 - build or version error
-## Solution :
+### Solution :
 - check path name (only english)
 - delete ...
 - re create sln file
