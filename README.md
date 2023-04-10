@@ -19,7 +19,7 @@
 - check path name (only english)
 - check&match version
 - check invalid plugin
-- delete ...
+- delete sln, saved, ...
 - re create sln file
 - download .Net core
 - https://onionisdelicious.tistory.com/45
