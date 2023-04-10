@@ -7,7 +7,7 @@
 
 # Memeber
 - Sean Moon (Programing)
-- 
+- seo minseok (Game designer)
 - 
 - 
 - 
