@@ -46,9 +46,12 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 public:
-	UPROPERTY(BlueprintAssignable, Category = "CombatSystem")
-		FTakeAttack OnTakeAttack;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="CombatSystem|Montage")
+	TMap<FString, UAnimMontage*> CombatMontage;
+
+	UPROPERTY(BlueprintAssignable, Category = "CombatSystem")
+	FTakeAttack OnTakeAttack;
 	UPROPERTY(BlueprintAssignable, Category = "CombatSystem")
 	FCombatStart OnCombatStart;
 	UPROPERTY(BlueprintAssignable, Category = "CombatSystem")
