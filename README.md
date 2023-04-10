@@ -17,6 +17,8 @@
 - build or version error
 ### Solution :
 - check path name (only english)
+- check&match version
+- check invalid plugin
 - delete ...
 - re create sln file
 - download .Net core
