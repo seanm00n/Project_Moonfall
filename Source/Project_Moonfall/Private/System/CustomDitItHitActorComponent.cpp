@@ -680,8 +680,10 @@ void UCustomDitItHitActorComponent::ItemAdded(FHitResult LastItem)
 	auto CombatSystemComponent = UCombatSystemComponent::GetCombatSystemComponent(GetOwner());
 	auto TargetAbilitySystemComponent = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(hitActor);
 	if (TargetAbilitySystemComponent) {
-		if (CombatSystemComponent)
-			CombatSystemComponent->TakeAttackUseCurrent(hitActor);
+		if (CombatSystemComponent) {
+			CombatSystemComponent->TakeAttackOnlyEffect(hitActor);
+			CombatSystemComponent->OnPostTakeAttack.Broadcast(GetOwner());
+		}
 	}
 }
 
