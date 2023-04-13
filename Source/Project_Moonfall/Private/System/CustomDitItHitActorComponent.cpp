@@ -590,6 +590,7 @@ void UCustomDitItHitActorComponent::AddHitToHitArray(TArray<FHitResult> HitArray
 				}
 			}
 			if (canParrying()) {
+				
 				if (isPerfectParrying(Hit.GetActor())) {
 					FGameplayEventData EventData;
 					EventData.Instigator = GetOwner();
@@ -597,6 +598,18 @@ void UCustomDitItHitActorComponent::AddHitToHitArray(TArray<FHitResult> HitArray
 					UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Hit.GetActor(),
 						FGameplayTag::RequestGameplayTag(FName("State.Parrying.Perfect.Success")),
 						EventData); 
+					if (!MyActorsToIgnoreOnce.Contains(Hit.GetActor())) {
+						MyActorsToIgnoreOnce.AddUnique(Hit.GetActor());
+						MyActorsToIgnoreParrying.AddUnique(Hit.GetActor());
+					}
+				}
+				else if (isParrying(Hit.GetActor())) {
+					FGameplayEventData EventData;
+					EventData.Instigator = GetOwner();
+					UE_LOG(LogTemp, Warning, TEXT("State.Parrying.Normal is Matched"));
+					UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Hit.GetActor(),
+						FGameplayTag::RequestGameplayTag(FName("State.Parrying.Normal.Success")),
+						EventData);
 					if (!MyActorsToIgnoreOnce.Contains(Hit.GetActor())) {
 						MyActorsToIgnoreOnce.AddUnique(Hit.GetActor());
 						MyActorsToIgnoreParrying.AddUnique(Hit.GetActor());
