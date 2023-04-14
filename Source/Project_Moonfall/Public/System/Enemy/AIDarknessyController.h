@@ -9,7 +9,7 @@
 /**
  * 
  */
-DECLARE_DELEGATE(Del_StartEnemyTimer);
+DECLARE_DELEGATE(FStartEnemyTimerDelegate);
 
 UCLASS()
 class PROJECT_MOONFALL_API AAIDarknessyController : public AAIController
@@ -20,22 +20,30 @@ public:
 	AAIDarknessyController();
 
 private:
-	virtual void OnPossess(APawn* InPawn) override;
-	
-	Del_StartEnemyTimer Event_StartEnemyTimer;
+	UFUNCTION()
+	virtual void OnPossess(APawn* Pawn) override;
+
+	UFUNCTION()
+	void StartEnemyTimer();
 
 private:
+	UBehaviorTree* BTAsset_Darknessy;
+	FStartEnemyTimerDelegate StartEnemyTimerDelegate;
+	const FString BTPath_Darknessy;
+	const float ActivateRange;
+
 	UPROPERTY()
 	float LineOfSightTimer;
+
 	UPROPERTY()
 	FTimerHandle EnemyTimer;
+
 	UPROPERTY()
 	FName IsInSight;
+
 	UPROPERTY()
 	FName EnemyActor;
-	UPROPERTY(EditAnywhere)
-	float ActivateRange;
+
 	UPROPERTY()
 	FVector StartPosition;
-
 };
