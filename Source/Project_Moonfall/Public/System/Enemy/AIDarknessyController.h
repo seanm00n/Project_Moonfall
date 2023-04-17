@@ -5,6 +5,9 @@
 #include "CoreMinimal.h"
 #include "AIController.h"
 #include "AIDarknessyController.generated.h"
+#include <Perception/AIPerceptionTypes.h>
+
+
 
 /**
  * 
@@ -24,6 +27,9 @@ private:
 	virtual void OnPossess(APawn* Pawn) override;
 
 	UFUNCTION()
+	void OnPerceptionUpdated(const TArray<AActor*> UpdatedActors, FAIStimulus Stimulus);
+
+	UFUNCTION()
 	void StartEnemyTimer();
 
 private:
@@ -31,6 +37,7 @@ private:
 	FStartEnemyTimerDelegate StartEnemyTimerDelegate;
 	const FString BTPath_Darknessy;
 	const float ActivateRange;
+	APawn* controlledPawn;
 
 	UPROPERTY()
 	float LineOfSightTimer;
@@ -46,4 +53,10 @@ private:
 
 	UPROPERTY()
 	FVector StartPosition;
+
+	UPROPERTY()
+	UBehaviorTreeComponent* BehaviorComp;
+
+	UPROPERTY()
+	UBlackboardComponent* BlackboardComp;
 };
