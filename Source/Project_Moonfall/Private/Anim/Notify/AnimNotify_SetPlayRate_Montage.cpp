@@ -5,7 +5,7 @@
 
 void UAnimNotify_SetPlayRate_Montage::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation)
 {
-	auto AnimInstance = MeshComp->GetAnimInstance();
+	auto AnimInstance = MeshComp->GetAnimInstance(); 
 	AnimInstance->Montage_SetPlayRate(
-		AnimInstance->	(), setPlayRate);
+		AnimInstance->GetCurrentActiveMontage(), setPlayRate);
 }

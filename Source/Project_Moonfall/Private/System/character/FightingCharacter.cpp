@@ -83,6 +83,10 @@ void AFightingCharacter::SetupPlayerInputComponent(class UInputComponent* Player
 
 	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent)) {
 		EnhancedInputComponent->BindAction(MovementAction, ETriggerEvent::Triggered, this, &AFightingCharacter::Move);
+
+		EnhancedInputComponent->BindAction(MovementAction, ETriggerEvent::Canceled, this, &AFightingCharacter::MoveEnd);
+		EnhancedInputComponent->BindAction(MovementAction, ETriggerEvent::Completed, this, &AFightingCharacter::MoveEnd);
+
 		EnhancedInputComponent->BindAction(RunAction, ETriggerEvent::Triggered, this, &AFightingCharacter::Run);
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AFightingCharacter::Look);
 	}
@@ -278,6 +282,11 @@ void AFightingCharacter::Move(const FInputActionValue& Value)
 	AddMovementInput(RightDirection, MovementVector.X);
 
 	
+}
+
+void AFightingCharacter::MoveEnd(const FInputActionValue& Value)
+{
+	MoveVector = FVector2D(0, 0);
 }
 
 void AFightingCharacter::Run(const FInputActionValue& Value)

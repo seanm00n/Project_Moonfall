@@ -81,6 +81,7 @@ protected:
 
 
 	void Move(const FInputActionValue& Value);
+	void MoveEnd(const FInputActionValue& Value);
 	void Run(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 
