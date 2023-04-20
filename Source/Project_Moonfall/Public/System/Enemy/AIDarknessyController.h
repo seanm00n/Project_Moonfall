@@ -27,17 +27,10 @@ private:
 	virtual void OnPossess(APawn* Pawn) override;
 
 	UFUNCTION()
-	void OnPerceptionUpdated(const TArray<AActor*> UpdatedActors, FAIStimulus Stimulus);
+	void OnPerceptionUpdated(const TArray<AActor*> UpdatedActors);
 
 	UFUNCTION()
 	void StartEnemyTimer();
-
-private:
-	UBehaviorTree* BTAsset_Darknessy;
-	FStartEnemyTimerDelegate StartEnemyTimerDelegate;
-	const FString BTPath_Darknessy;
-	const float ActivateRange;
-	APawn* controlledPawn;
 
 	UPROPERTY()
 	float LineOfSightTimer;
@@ -59,4 +52,14 @@ private:
 
 	UPROPERTY()
 	UBlackboardComponent* BlackboardComp;
+
+	UPROPERTY()
+	class UAIPerceptionComponent* PerceptionComponent;
+
+	UBehaviorTree* BTAsset_Darknessy;
+	FStartEnemyTimerDelegate StartEnemyTimerDelegate;
+	const FString BTPath_Darknessy;
+	const float ActivateRange;
+	APawn* controlledPawn;
+
 };

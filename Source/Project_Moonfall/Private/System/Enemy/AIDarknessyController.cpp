@@ -4,6 +4,9 @@
 #include "System/Enemy/AIDarknessyController.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include <Perception/AIPerceptionTypes.h>
+#include "AI/Perception/AIPerceptionComponent.h"
+
 
 AAIDarknessyController::AAIDarknessyController()
 	: ActivateRange(2000.0f)
@@ -23,6 +26,9 @@ AAIDarknessyController::AAIDarknessyController()
 
 	BlackboardComp = BehaviorComp->GetBlackboardComponent();
 	//link Blackboard to Behaviortree
+
+	PerceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("AIPerceptionComponent"));
+	PerceptionComponent->
 }
 
 void AAIDarknessyController::OnPossess(APawn* Pawn)
