@@ -37,6 +37,10 @@ public:
 	// Sets default values for this component's properties
 	UCombatSystemComponent();
 
+
+
+	UFUNCTION()
+	void RandomMonsterParrying();
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -47,6 +51,11 @@ public:
 
 public:
 
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CombatSystem|Probability")
+	float ParryingSuccessProbability = 0.2;
+
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="CombatSystem|Montage")
 	TMap<FString, UAnimMontage*> CombatMontage;
 
@@ -77,6 +86,22 @@ public:
 	UFUNCTION()
 		void BindTakeAttack();
 private:
+	
+	float ParryingSuccessProbability_base = ParryingSuccessProbability;
+
+	int ParryingNumSuccess = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CombatSystem|Montage|CombatAI", meta = (AllowPrivateAccess = "true"))
+	UAnimMontage* ParryingMontage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CombatSystem|Montage|CombatAI", meta = (AllowPrivateAccess = "true"))
+	UAnimMontage* HitReactMontage;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CombatSystem|Montage|CombatAI", meta = (AllowPrivateAccess = "true"))
+	UAnimMontage* GroggyMontage;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CombatSystem|Montage|CombatAI", meta = (AllowPrivateAccess = "true"))
+	UAnimMontage* CriticalHitReactMontage;
+
+
 	UPROPERTY(Category = Combat, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 		UGSCAbilitySystemComponent* AbilitySystemComponent;
 

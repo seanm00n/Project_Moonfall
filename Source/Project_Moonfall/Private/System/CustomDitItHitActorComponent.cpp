@@ -14,6 +14,7 @@ which is just another way of saying that you can't.*/
 #include "System/CombatSystemComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 
+#include "System/Combat/CombatSystemLibrary.h"
 
 
 
@@ -579,8 +580,11 @@ void UCustomDitItHitActorComponent::AddHitToHitArray(TArray<FHitResult> HitArray
 		{
 
 			auto AbilitySystemComponent = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(Hit.GetActor());
+			auto CombatSystemComponent = UCombatSystemComponent::GetCombatSystemComponent(Hit.GetActor());
+			if (CombatSystemComponent) {
+				CombatSystemComponent->RandomMonsterParrying();
 
-
+			}
 			if (canEvade()) {
 				if (isEvade(Hit.GetActor())) {
 					if (!MyActorsToIgnoreOnce.Contains(Hit.GetActor())) {

@@ -7,6 +7,7 @@
 #include "AbilitySystemGlobals.h"
 #include "Abilities/GSCBlueprintFunctionLibrary.h"
 #include "System/CombatSystemInterface.h"
+#include "System/Combat/CombatSystemLibrary.h"
 
 // Sets default values for this component's properties
 UCombatSystemComponent::UCombatSystemComponent()
@@ -18,6 +19,35 @@ UCombatSystemComponent::UCombatSystemComponent()
 }
 
 
+void UCombatSystemComponent::RandomMonsterParrying()
+{
+	for (int i = 0; i < 3; i++) {
+	auto rate = UCombatSystemLibrary::CalculateProbability_BinomialDistribution(3, ParryingSuccessProbability, i) * 100;
+
+	UE_LOG(LogTemp, Warning, TEXT("SuccessRate : %f"), rate);
+	}
+	/*for (int i = 0; i < 3; i++) {
+		auto rate = UCombatSystemLibrary::CalculateProbability_BinomialDistribution(1, ParryingSuccessProbability, i) * 100;
+
+		UE_LOG(LogTemp, Warning, TEXT("SuccessRate : %f"), rate);
+	}*/
+	auto per = FMath::RandRange(0, 100);
+
+	UE_LOG(LogTemp, Warning, TEXT("Per : %d"), per);
+	UE_LOG(LogTemp, Warning, TEXT("CalculateProbability_BinomialDistribution : %f"), UCombatSystemLibrary::CalculateProbability_BinomialDistribution(3, ParryingSuccessProbability, ParryingNumSuccess)*100);
+	if (per >= (UCombatSystemLibrary::CalculateProbability_BinomialDistribution(3,ParryingSuccessProbability,ParryingNumSuccess)*100)){
+		ParryingNumSuccess++;
+		//패링 로직 
+		UE_LOG(LogTemp, Warning, TEXT("Random Attack Parrying"));
+
+		UE_LOG(LogTemp, Warning, TEXT("SuccessNum : %d"), ParryingNumSuccess);
+	}
+	else {
+		ParryingNumSuccess = 0;
+		ParryingSuccessProbability = ParryingSuccessProbability_base;
+	}
+}
+
 // Called when the game starts
 void UCombatSystemComponent::BeginPlay()
 {
@@ -27,6 +57,8 @@ void UCombatSystemComponent::BeginPlay()
 	AbilitySystemComponent = Cast<UGSCAbilitySystemComponent>(UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(GetOwner()));
 
 	OnTakeAttack.AddDynamic(this, &UCombatSystemComponent::BindTakeAttack);
+
+	ParryingSuccessProbability_base = ParryingSuccessProbability;
 }
 
 
