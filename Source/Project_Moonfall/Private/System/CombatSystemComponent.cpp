@@ -19,32 +19,45 @@ UCombatSystemComponent::UCombatSystemComponent()
 }
 
 
-void UCombatSystemComponent::RandomMonsterParrying()
+bool UCombatSystemComponent::RandomMonsterParrying()
 {
-	for (int i = 0; i < 3; i++) {
-	auto rate = UCombatSystemLibrary::CalculateProbability_BinomialDistribution(3, ParryingSuccessProbability, i) * 100;
-
-	UE_LOG(LogTemp, Warning, TEXT("SuccessRate : %f"), rate);
-	}
 	/*for (int i = 0; i < 3; i++) {
-		auto rate = UCombatSystemLibrary::CalculateProbability_BinomialDistribution(1, ParryingSuccessProbability, i) * 100;
+		auto rate = UCombatSystemLibrary::CalculateProbability_BinomialDistribution(3, ParryingSuccessProbability, i) * 100;
 
 		UE_LOG(LogTemp, Warning, TEXT("SuccessRate : %f"), rate);
-	}*/
-	auto per = FMath::RandRange(0, 100);
+	}
+	*/
+	if (!bUseAutoParry)
+		return false;
 
+	auto per = FMath::RandRange(0, 100);
+	auto SuccessProbabilityBase =
+		(UCombatSystemLibrary::CalculateProbability_BinomialDistribution(3, ParryingSuccessProbability, ParryingNumSuccess) * 100);
+	auto SuccessProbability = bUseSuccessWeight ?
+		(SuccessProbabilityBase - ParryingSuccessWeight) : SuccessProbabilityBase;
+
+	//Log
 	UE_LOG(LogTemp, Warning, TEXT("Per : %d"), per);
-	UE_LOG(LogTemp, Warning, TEXT("CalculateProbability_BinomialDistribution : %f"), UCombatSystemLibrary::CalculateProbability_BinomialDistribution(3, ParryingSuccessProbability, ParryingNumSuccess)*100);
-	if (per >= (UCombatSystemLibrary::CalculateProbability_BinomialDistribution(3,ParryingSuccessProbability,ParryingNumSuccess)*100)){
+	UE_LOG(LogTemp, Warning, TEXT("CalculateProbability_BinomialDistribution : %f"), SuccessProbability);
+
+	if ((MaxParryingSuccess > ParryingNumSuccess) && (per >= SuccessProbability)) {
 		ParryingNumSuccess++;
-		//패링 로직 
+		//log
 		UE_LOG(LogTemp, Warning, TEXT("Random Attack Parrying"));
 
 		UE_LOG(LogTemp, Warning, TEXT("SuccessNum : %d"), ParryingNumSuccess);
+		//패링 로직 
+		auto AbilitySystemComp = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetOwner());
+		if (AbilitySystemComp) {
+			auto spec = AbilitySystemComp->BuildAbilitySpecFromClass(ParryingAbility);
+			AbilitySystemComp->GiveAbilityAndActivateOnce(spec);
+		}
+		return true;
 	}
 	else {
 		ParryingNumSuccess = 0;
 		ParryingSuccessProbability = ParryingSuccessProbability_base;
+		return false;
 	}
 }
 

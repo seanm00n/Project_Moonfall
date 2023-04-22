@@ -40,7 +40,7 @@ public:
 
 
 	UFUNCTION()
-	void RandomMonsterParrying();
+	bool RandomMonsterParrying();
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -51,9 +51,6 @@ public:
 
 public:
 
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CombatSystem|Probability")
-	float ParryingSuccessProbability = 0.2;
 
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="CombatSystem|Montage")
@@ -87,19 +84,34 @@ public:
 		void BindTakeAttack();
 private:
 	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CombatSystem|Probability", meta = (AllowPrivateAccess = "true"))
+	float ParryingSuccessProbability = 0.2;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CombatSystem|Probability", meta = (AllowPrivateAccess = "true"))
+	float ParryingSuccessWeight = 20;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CombatSystem|Probability", meta = (AllowPrivateAccess = "true"))
+	int MaxParryingSuccess = 3;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CombatSystem|Probability", meta = (AllowPrivateAccess = "true"))
+	bool bUseSuccessWeight = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CombatSystem|Probability", meta = (AllowPrivateAccess = "true"))
+	bool bUseAutoParry = false;
+
 	float ParryingSuccessProbability_base = ParryingSuccessProbability;
 
 	int ParryingNumSuccess = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CombatSystem|Montage|CombatAI", meta = (AllowPrivateAccess = "true"))
-	UAnimMontage* ParryingMontage;
+	TSubclassOf<class UGameplayAbility> ParryingAbility;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CombatSystem|Montage|CombatAI", meta = (AllowPrivateAccess = "true"))
-	UAnimMontage* HitReactMontage;
+	TSubclassOf<class UGameplayAbility> HitReactAbility;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CombatSystem|Montage|CombatAI", meta = (AllowPrivateAccess = "true"))
-	UAnimMontage* GroggyMontage;
+	TSubclassOf<class UGameplayAbility> GroggyAbility;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CombatSystem|Montage|CombatAI", meta = (AllowPrivateAccess = "true"))
-	UAnimMontage* CriticalHitReactMontage;
+	TSubclassOf<class UGameplayAbility> CriticalHitReactAbility;
 
 
 	UPROPERTY(Category = Combat, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
