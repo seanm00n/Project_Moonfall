@@ -41,22 +41,22 @@ bool UCombatSystemComponent::RandomMonsterParrying()
 	UE_LOG(LogTemp, Warning, TEXT("CalculateProbability_BinomialDistribution : %f"), SuccessProbability);
 
 	if ((MaxParryingSuccess > ParryingNumSuccess) && (per >= SuccessProbability)) {
-		ParryingNumSuccess++;
+		
 		//log
 		UE_LOG(LogTemp, Warning, TEXT("Random Attack Parrying"));
 
 		UE_LOG(LogTemp, Warning, TEXT("SuccessNum : %d"), ParryingNumSuccess);
+
 		//패링 로직 
-		auto AbilitySystemComp = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetOwner());
-		if (AbilitySystemComp) {
-			auto spec = AbilitySystemComp->BuildAbilitySpecFromClass(ParryingAbility);
-			AbilitySystemComp->GiveAbilityAndActivateOnce(spec);
+		Success_Parrying();
+
+		if (MaxParryingSuccess <= ParryingNumSuccess) {
+			Failure_Parrying();
 		}
 		return true;
 	}
 	else {
-		ParryingNumSuccess = 0;
-		ParryingSuccessProbability = ParryingSuccessProbability_base;
+		Failure_Parrying();
 		return false;
 	}
 }
@@ -74,6 +74,24 @@ void UCombatSystemComponent::BeginPlay()
 	ParryingSuccessProbability_base = ParryingSuccessProbability;
 }
 
+
+void UCombatSystemComponent::Success_Parrying()
+{
+	ParryingNumSuccess++;
+	auto AbilitySystemComp = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetOwner());
+	if (AbilitySystemComp) {
+		if (ParryingAbility) {
+			auto spec = AbilitySystemComp->BuildAbilitySpecFromClass(ParryingAbility);
+			AbilitySystemComp->GiveAbilityAndActivateOnce(spec);
+		}
+	}
+}
+
+void UCombatSystemComponent::Failure_Parrying()
+{
+	ParryingNumSuccess = 0;
+	ParryingSuccessProbability = ParryingSuccessProbability_base;
+}
 
 // Called every frame
 void UCombatSystemComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)

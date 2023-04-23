@@ -44,7 +44,10 @@ public:
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
-
+private:
+	//Function
+	void Success_Parrying();
+	void Failure_Parrying();
 public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
@@ -83,7 +86,7 @@ public:
 	UFUNCTION()
 		void BindTakeAttack();
 private:
-	
+	//Probability
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CombatSystem|Probability", meta = (AllowPrivateAccess = "true"))
 	float ParryingSuccessProbability = 0.2;
 
@@ -102,7 +105,8 @@ private:
 	float ParryingSuccessProbability_base = ParryingSuccessProbability;
 
 	int ParryingNumSuccess = 0;
-
+	
+	//Montage|CombatAI
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CombatSystem|Montage|CombatAI", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<class UGameplayAbility> ParryingAbility;
 
