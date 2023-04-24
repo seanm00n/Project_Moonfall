@@ -230,20 +230,7 @@ public:
 	virtual void AddHitToHitArray(TArray<FHitResult> HitArrayToAdd);
 	////////////
 	//게임태그를 이용한 패링,회피 판별 함수들
-	UFUNCTION()
-	bool isEvade(AActor* _target);
-
-	UFUNCTION()
-	bool canEvade();
-
-	UFUNCTION()
-	bool isParrying(AActor* _target);
-
-	UFUNCTION()
-	bool isPerfectParrying(AActor* _target);
-
-	UFUNCTION()
-	bool canParrying();
+	
 
 	UFUNCTION()
 	void ItemAdded(FHitResult LastItem);
@@ -276,6 +263,30 @@ public:
 	UFUNCTION(BlueprintPure, Category = Combat)
 	static UCustomDitItHitActorComponent* GetCustomDitItHitActorComponent(const AActor* Actor);
 private:
+
+	UFUNCTION()
+	void CheckEvade(AActor* _target);
+
+	UFUNCTION()
+	bool isEvade(AActor* _target);
+
+	UFUNCTION()
+	bool canEvade();
+
+	UFUNCTION()
+	void CheckParrying(AActor* _target);
+
+	UFUNCTION()
+	bool isParrying(AActor* _target);
+
+	UFUNCTION()
+	bool isPerfectParrying(AActor* _target);
+
+	UFUNCTION()
+	bool canParrying();
+
+	UFUNCTION()
+	void CheckAutoParrying(AActor* _target);
 
 	static UCustomDitItHitActorComponent* GetCustomDitItHitActorComponentFromActor(const AActor* Actor, bool LookForComponent = true);
 };

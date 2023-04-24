@@ -14,6 +14,7 @@ which is just another way of saying that you can't.*/
 #include "System/CombatSystemComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 
+#include "System/Combat/CombatSystemLibrary.h"
 
 
 
@@ -578,44 +579,32 @@ void UCustomDitItHitActorComponent::AddHitToHitArray(TArray<FHitResult> HitArray
 		if (!HitArray.ContainsByPredicate([&](const FHitResult& Inner) {  return Inner.GetActor() == Hit.GetActor(); }))
 		{
 
-			auto AbilitySystemComponent = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(Hit.GetActor());
+			CheckAutoParrying(Hit.GetActor());
+			CheckEvade(Hit.GetActor());
+			CheckParrying(Hit.GetActor());
 
-
-			if (canEvade()) {
-				if (isEvade(Hit.GetActor())) {
-					if (!MyActorsToIgnoreOnce.Contains(Hit.GetActor())) {
-						MyActorsToIgnoreOnce.AddUnique(Hit.GetActor());
-						MyActorsToIgnoreEvade.AddUnique(Hit.GetActor());
-					}
-				}
-			}
-			if (canParrying()) {
-				if (isPerfectParrying(Hit.GetActor())) {
-					FGameplayEventData EventData;
-					EventData.Instigator = GetOwner();
-					UE_LOG(LogTemp, Warning, TEXT("State.Parrying.Perfect is Matched"));
-					UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Hit.GetActor(),
-						FGameplayTag::RequestGameplayTag(FName("State.Parrying.Perfect.Success")),
-						EventData); 
-					if (!MyActorsToIgnoreOnce.Contains(Hit.GetActor())) {
-						MyActorsToIgnoreOnce.AddUnique(Hit.GetActor());
-						MyActorsToIgnoreParrying.AddUnique(Hit.GetActor());
-					}
-				}
-			}
 			if (!MyActorsToIgnoreOnce.Contains(Hit.GetActor())) {
 				HitArray.Add(Hit);
 				SendTagHitEvent_Lotus();
 				UE_LOG(LogTemp, Warning, TEXT("State.Evade.Perfect is not Matched"));
-				OnItemAdded.Broadcast(Hit);/*
-				AFightingCharacter* Character = Cast<AFightingCharacter*>(GetOwner());
-				AbilitySystemComponent->ApplyGameplayEffectToSelf(,
-					AbilitySystemComponent->MakeEffectContext())*/
+				OnItemAdded.Broadcast(Hit);
 			}
 		}
 	}
 	for (AActor* IgnoreActor : MyActorsToIgnoreOnce) {
 		MyActorsToIgnore.AddUnique(IgnoreActor);
+	}
+}
+
+void UCustomDitItHitActorComponent::CheckEvade(AActor* _target)
+{
+	if (canEvade()) {
+		if (isEvade(_target)) {
+			if (!MyActorsToIgnoreOnce.Contains(_target)) {
+				MyActorsToIgnoreOnce.AddUnique(_target);
+				MyActorsToIgnoreEvade.AddUnique(_target);
+			}
+		}
 	}
 }
 
@@ -638,6 +627,37 @@ bool UCustomDitItHitActorComponent::canEvade()
 		return true;
 	}
 	return false;
+}
+
+void UCustomDitItHitActorComponent::CheckParrying(AActor* _target)
+{
+	if (canParrying()) {
+
+		if (isPerfectParrying(_target)) {
+			FGameplayEventData EventData;
+			EventData.Instigator = GetOwner();
+			UE_LOG(LogTemp, Warning, TEXT("State.Parrying.Perfect is Matched"));
+			UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(_target,
+				FGameplayTag::RequestGameplayTag(FName("State.Parrying.Perfect.Success")),
+				EventData);
+			if (!MyActorsToIgnoreOnce.Contains(_target)) {
+				MyActorsToIgnoreOnce.AddUnique(_target);
+				MyActorsToIgnoreParrying.AddUnique(_target);
+			}
+		}
+		else if (isParrying(_target)) {
+			FGameplayEventData EventData;
+			EventData.Instigator = GetOwner();
+			UE_LOG(LogTemp, Warning, TEXT("State.Parrying.Normal is Matched"));
+			UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(_target,
+				FGameplayTag::RequestGameplayTag(FName("State.Parrying.Normal.Success")),
+				EventData);
+			if (!MyActorsToIgnoreOnce.Contains(_target)) {
+				MyActorsToIgnoreOnce.AddUnique(_target);
+				MyActorsToIgnoreParrying.AddUnique(_target);
+			}
+		}
+	}
 }
 
 bool UCustomDitItHitActorComponent::isParrying(AActor* _target)
@@ -671,6 +691,19 @@ bool UCustomDitItHitActorComponent::canParrying()
 		return true;
 	}
 	return false;
+}
+
+void UCustomDitItHitActorComponent::CheckAutoParrying(AActor* _target)
+{
+	auto CombatSystemComponent = UCombatSystemComponent::GetCombatSystemComponent(_target);
+	if (CombatSystemComponent) {
+		if (CombatSystemComponent->RandomMonsterParrying()) {
+			if (!MyActorsToIgnoreOnce.Contains(_target)) {
+				MyActorsToIgnoreOnce.AddUnique(_target);
+				MyActorsToIgnoreParrying.AddUnique(_target);
+			}
+		}
+	}
 }
 
 void UCustomDitItHitActorComponent::ItemAdded(FHitResult LastItem)

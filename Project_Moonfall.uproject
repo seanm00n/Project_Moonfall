@@ -65,5 +65,8 @@
 			"Name": "AnimationWarping",
 			"Enabled": true
 		}
+	],
+	"TargetPlatforms": [
+		"Windows"
 	]
 }

@@ -7,6 +7,7 @@
 #include "AbilitySystemGlobals.h"
 #include "Abilities/GSCBlueprintFunctionLibrary.h"
 #include "System/CombatSystemInterface.h"
+#include "System/Combat/CombatSystemLibrary.h"
 
 // Sets default values for this component's properties
 UCombatSystemComponent::UCombatSystemComponent()
@@ -18,6 +19,48 @@ UCombatSystemComponent::UCombatSystemComponent()
 }
 
 
+bool UCombatSystemComponent::RandomMonsterParrying()
+{
+	/*for (int i = 0; i < 3; i++) {
+		auto rate = UCombatSystemLibrary::CalculateProbability_BinomialDistribution(3, ParryingSuccessProbability, i) * 100;
+
+		UE_LOG(LogTemp, Warning, TEXT("SuccessRate : %f"), rate);
+	}
+	*/
+	if (!bUseAutoParry)
+		return false;
+
+	auto per = FMath::RandRange(0, 100);
+	auto SuccessProbabilityBase =
+		(UCombatSystemLibrary::CalculateProbability_BinomialDistribution(3, ParryingSuccessProbability, ParryingNumSuccess) * 100);
+	auto SuccessProbability = bUseSuccessWeight ?
+		(SuccessProbabilityBase - ParryingSuccessWeight) : SuccessProbabilityBase;
+
+	//Log
+	UE_LOG(LogTemp, Warning, TEXT("Per : %d"), per);
+	UE_LOG(LogTemp, Warning, TEXT("CalculateProbability_BinomialDistribution : %f"), SuccessProbability);
+
+	if ((MaxParryingSuccess > ParryingNumSuccess) && (per >= SuccessProbability)) {
+		
+		//log
+		UE_LOG(LogTemp, Warning, TEXT("Random Attack Parrying"));
+
+		UE_LOG(LogTemp, Warning, TEXT("SuccessNum : %d"), ParryingNumSuccess);
+
+		//패링 로직 
+		Success_Parrying();
+
+		if (MaxParryingSuccess <= ParryingNumSuccess) {
+			Failure_Parrying();
+		}
+		return true;
+	}
+	else {
+		Failure_Parrying();
+		return false;
+	}
+}
+
 // Called when the game starts
 void UCombatSystemComponent::BeginPlay()
 {
@@ -27,8 +70,28 @@ void UCombatSystemComponent::BeginPlay()
 	AbilitySystemComponent = Cast<UGSCAbilitySystemComponent>(UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(GetOwner()));
 
 	OnTakeAttack.AddDynamic(this, &UCombatSystemComponent::BindTakeAttack);
+
+	ParryingSuccessProbability_base = ParryingSuccessProbability;
 }
 
+
+void UCombatSystemComponent::Success_Parrying()
+{
+	ParryingNumSuccess++;
+	auto AbilitySystemComp = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetOwner());
+	if (AbilitySystemComp) {
+		if (ParryingAbility) {
+			auto spec = AbilitySystemComp->BuildAbilitySpecFromClass(ParryingAbility);
+			AbilitySystemComp->GiveAbilityAndActivateOnce(spec);
+		}
+	}
+}
+
+void UCombatSystemComponent::Failure_Parrying()
+{
+	ParryingNumSuccess = 0;
+	ParryingSuccessProbability = ParryingSuccessProbability_base;
+}
 
 // Called every frame
 void UCombatSystemComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
