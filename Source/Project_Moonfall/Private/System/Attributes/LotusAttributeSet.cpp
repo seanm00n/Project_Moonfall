@@ -59,6 +59,10 @@ void ULotusAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
     DOREPLIFETIME_CONDITION_NOTIFY(ULotusAttributeSet, Lotus, COND_None, REPNOTIFY_Always);
     
     DOREPLIFETIME_CONDITION_NOTIFY(ULotusAttributeSet, MaxLotus, COND_None, REPNOTIFY_Always);
+
+    DOREPLIFETIME_CONDITION_NOTIFY(ULotusAttributeSet, Charm, COND_None, REPNOTIFY_Always);
+
+    DOREPLIFETIME_CONDITION_NOTIFY(ULotusAttributeSet, MaxCharm, COND_None, REPNOTIFY_Always);
 }
 
 void ULotusAttributeSet::OnRep_Lotus(const FGameplayAttributeData& OldLotus)
@@ -69,4 +73,14 @@ void ULotusAttributeSet::OnRep_Lotus(const FGameplayAttributeData& OldLotus)
 void ULotusAttributeSet::OnRep_MaxLotus(const FGameplayAttributeData& OldMaxLotus)
 {
     GAMEPLAYATTRIBUTE_REPNOTIFY(ULotusAttributeSet, MaxLotus, OldMaxLotus);
+}
+
+void ULotusAttributeSet::OnRep_Charm(const FGameplayAttributeData& OldCharm)
+{
+    GAMEPLAYATTRIBUTE_REPNOTIFY(ULotusAttributeSet, Charm, OldCharm);
+}
+
+void ULotusAttributeSet::OnRep_MaxCharm(const FGameplayAttributeData& OldMaxCharm)
+{
+    GAMEPLAYATTRIBUTE_REPNOTIFY(ULotusAttributeSet, MaxCharm, OldMaxCharm);
 }

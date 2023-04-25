@@ -28,7 +28,15 @@ public:
     
     UPROPERTY(BlueprintReadOnly, Category = "Attribute|Lotus", ReplicatedUsing = OnRep_MaxLotus)
     FGameplayAttributeData MaxLotus = 5.0;
-    ATTRIBUTE_ACCESSORS(ULotusAttributeSet, MaxLotus)    
+    ATTRIBUTE_ACCESSORS(ULotusAttributeSet, MaxLotus)   
+
+        UPROPERTY(BlueprintReadOnly, Category = "Attribute|Charm", ReplicatedUsing = OnRep_Charm)
+        FGameplayAttributeData Charm = 0.0;
+    ATTRIBUTE_ACCESSORS(ULotusAttributeSet, Charm)
+
+        UPROPERTY(BlueprintReadOnly, Category = "Attribute|Charm", ReplicatedUsing = OnRep_MaxCharm)
+        FGameplayAttributeData MaxCharm = 5.0;
+    ATTRIBUTE_ACCESSORS(ULotusAttributeSet, MaxCharm)
 
 protected:
     
@@ -38,5 +46,11 @@ protected:
     UFUNCTION()
     virtual void OnRep_MaxLotus(const FGameplayAttributeData& OldMaxLotus);
 	
-	
+    UFUNCTION()
+    virtual void OnRep_Charm(const FGameplayAttributeData& OldCharm);
+
+    UFUNCTION()
+    virtual void OnRep_MaxCharm(const FGameplayAttributeData& OldMaxCharm);
+
+
 };
