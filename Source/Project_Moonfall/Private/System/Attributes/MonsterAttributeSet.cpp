@@ -56,15 +56,15 @@ void UMonsterAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&
 {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-    DOREPLIFETIME_CONDITION_NOTIFY(UMonsterAttributeSet, HealthPoint, COND_None, REPNOTIFY_Always);
+    DOREPLIFETIME_CONDITION_NOTIFY(UMonsterAttributeSet, HealthPoint, COND_None, REPNOTIFY_Always);//Æó±âµÊ
         
     DOREPLIFETIME_CONDITION_NOTIFY(UMonsterAttributeSet, AttackPoint, COND_None, REPNOTIFY_Always);
     
-    DOREPLIFETIME_CONDITION_NOTIFY(UMonsterAttributeSet, AttackRange, COND_None, REPNOTIFY_Always);
+    DOREPLIFETIME_CONDITION_NOTIFY(UMonsterAttributeSet, AttackRange, COND_None, REPNOTIFY_Always);//Æó±âµÊ
     
-    DOREPLIFETIME_CONDITION_NOTIFY(UMonsterAttributeSet, Stack, COND_None, REPNOTIFY_Always);
+    DOREPLIFETIME_CONDITION_NOTIFY(UMonsterAttributeSet, Stack, COND_None, REPNOTIFY_Always);//Æó±âµÊ
 
-    DOREPLIFETIME_CONDITION_NOTIFY(UMonsterAttributeSet, Phase, COND_None, REPNOTIFY_Always);
+    DOREPLIFETIME_CONDITION_NOTIFY(UMonsterAttributeSet, Phase, COND_None, REPNOTIFY_Always);//Æó±âµÊ
 
 }
 
