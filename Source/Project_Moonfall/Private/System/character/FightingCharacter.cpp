@@ -20,6 +20,7 @@
 
 
 AFightingCharacter::AFightingCharacter(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get())
+	:OriginRotationRate(0.0f, 700.0f, 0.0f)
 {
 
 	AbilitySystemComponent = CreateDefaultSubobject<UGSCAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
@@ -41,7 +42,7 @@ AFightingCharacter::AFightingCharacter(const FObjectInitializer& ObjectInitializ
 
 	// Configure character movement
 	GetCharacterMovement()->bOrientRotationToMovement = true; // Character moves in the direction of input...	
-	GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f); // ...at this rotation rate
+	GetCharacterMovement()->RotationRate = OriginRotationRate; // ...at this rotation rate
 
 	// Note: For faster iteration times these variables, and many more, can be tweaked in the Character Blueprint
 	// instead of recompiling to adjust them
@@ -101,14 +102,6 @@ void AFightingCharacter::SetupPlayerInputComponent(class UInputComponent* Player
 
 	//Attack
 
-	PlayerInputComponent->BindAction("Attack1", IE_Pressed, this, &AFightingCharacter::StartAttack1);
-
-	PlayerInputComponent->BindAction("Attack2", IE_Pressed, this, &AFightingCharacter::StartAttack2);
-
-	PlayerInputComponent->BindAction("Attack3", IE_Pressed, this, &AFightingCharacter::StartAttack3);
-
-	PlayerInputComponent->BindAction("Attack4", IE_Pressed, this, &AFightingCharacter::StartAttack4);
-
 	// We have 2 versions of the rotation bindings to handle different kinds of devices differently
 	// "turn" handles devices that provide an absolute delta, such as a mouse.
 	// "turnrate" is for devices that we choose to treat as a rate of change, such as an analog joystick
@@ -120,6 +113,33 @@ void AFightingCharacter::SetupPlayerInputComponent(class UInputComponent* Player
 	// handle touch devices
 	PlayerInputComponent->BindTouch(IE_Pressed, this, &AFightingCharacter::TouchStarted);
 	PlayerInputComponent->BindTouch(IE_Released, this, &AFightingCharacter::TouchStopped);
+}
+
+void AFightingCharacter::RotateCharacterToCamera()
+{
+	ACharacter* MyCharacter = this;
+	UCameraComponent* MyCamera = GetFollowCamera();
+
+	FVector CharacterLocation = MyCharacter->GetActorLocation();
+	FVector CameraLocation = MyCamera->GetComponentLocation();
+	FVector CameraForwardVector = MyCamera->GetForwardVector();
+	FVector CharacterForwardVector = MyCharacter->GetActorForwardVector();
+
+	FVector ToCameraVector = CameraLocation - CharacterLocation;
+
+	float DotProduct = FVector::DotProduct(CharacterForwardVector, ToCameraVector);
+	if (DotProduct < 0)
+	{
+		// 캐릭터의 Forward 벡터와 카메라와의 벡터가 서로 반대 방향을 가리키는 경우
+		// 캐릭터의 회전 방향을 카메라 반대 방향으로 설정합니다.
+		CharacterForwardVector *= -1;
+	}
+
+	FRotator NewRotation = FRotationMatrix::MakeFromXZ(-ToCameraVector, FVector::CrossProduct(CharacterForwardVector, -ToCameraVector)).Rotator();
+	NewRotation.Pitch = 0;
+	NewRotation.Roll = 0;
+	MyCharacter->SetActorRotation(NewRotation);
+
 }
 
 UAbilitySystemComponent* AFightingCharacter::GetAbilitySystemComponent() const
@@ -146,6 +166,8 @@ void AFightingCharacter::BeginPlay()
 			Subsystem->AddMappingContext(MappingContext, 0);
 		}
 	}
+
+	GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f);
 }
 
 void AFightingCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -160,6 +182,14 @@ void AFightingCharacter::PostInitProperties()
 	{
 		// GSC_LOG(Verbose, TEXT("AGSCModularCharacter::PostInitProperties for %s - Setting up ASC Replication Mode to: %d"), *GetName(), ReplicationMode)
 		AbilitySystemComponent->SetReplicationMode(ReplicationMode);
+	}
+}
+
+void AFightingCharacter::Tick(float DeltaTime)
+{
+	if (isMove) {
+
+		RotationToMovementTime += DeltaTime;
 	}
 }
 
@@ -280,13 +310,24 @@ void AFightingCharacter::Move(const FInputActionValue& Value)
 	// add movement in that direction
 	const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 	AddMovementInput(RightDirection, MovementVector.X);
+	isMove = true;
 
+	if (RotationToMovementTime < CheckRotationToMovementTime) {
+		GetCharacterMovement()->RotationRate = FRotator(0,50.0f,0);
+	}
+	else {
+		GetCharacterMovement()->RotationRate = OriginRotationRate;
+	}
 	
 }
 
 void AFightingCharacter::MoveEnd(const FInputActionValue& Value)
 {
 	MoveVector = FVector2D(0, 0);
+
+	GetCharacterMovement()->RotationRate = OriginRotationRate;
+	RotationToMovementTime = 0.f;
+	isMove = false;
 }
 
 void AFightingCharacter::Run(const FInputActionValue& Value)
@@ -344,29 +385,5 @@ void AFightingCharacter::MoveRight(float Value)
 		// add movement in that direction
 		AddMovementInput(Direction, Value);
 	}
-}
-
-void AFightingCharacter::StartAttack1()
-{
-	UE_LOG(LogTemp, Warning, TEXT("AFightingCharacter::StartAttack1"));
-	Attack1();
-}
-
-void AFightingCharacter::StartAttack2()
-{
-	UE_LOG(LogTemp, Warning, TEXT("AFightingCharacter::StartAttack2"));
-	Attack2();
-}
-
-void AFightingCharacter::StartAttack3()
-{
-	UE_LOG(LogTemp, Warning, TEXT("AFightingCharacter::StartAttack3"));
-	Attack3();
-}
-
-void AFightingCharacter::StartAttack4()
-{
-	UE_LOG(LogTemp, Warning, TEXT("AFightingCharacter::StartAttack4"));
-	Attack4();
 }
 
