@@ -54,11 +54,15 @@ class PROJECT_MOONFALL_API AFightingCharacter : public ACharacter, public IAbili
 	class UCameraComponent* FollowCamera;
 
 
+	const FRotator OriginRotationRate;
 
-	void StartAttack1();
-	void StartAttack2();
-	void StartAttack3();
-	void StartAttack4();
+	UPROPERTY()
+	bool isMove = false;
+
+	UPROPERTY()
+	float RotationToMovementTime = 0.f;
+	const float CheckRotationToMovementTime = 0.15f;
+
 
 public:
 	AFightingCharacter(const FObjectInitializer& ObjectInitializer);
@@ -133,6 +137,9 @@ public:
 
 
 
+	UFUNCTION(BlueprintCallable)
+	void RotateCharacterToCamera();
+
 	UPROPERTY(EditDefaultsOnly, Category = "GAS Companion|Ability System")
 	EGameplayEffectReplicationMode ReplicationMode = EGameplayEffectReplicationMode::Mixed;
 
@@ -159,15 +166,10 @@ public:
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	virtual void PostInitProperties() override;
+
+
+	virtual void Tick(float DeltaTime) override;
 	//~ End AActor Interface
-	UFUNCTION(BlueprintImplementableEvent)
-	void Attack1(); 
-	UFUNCTION(BlueprintImplementableEvent)
-	void Attack2(); 
-	UFUNCTION(BlueprintImplementableEvent)
-	void Attack3();
-	UFUNCTION(BlueprintImplementableEvent)
-	void Attack4();
 
 
 	//
