@@ -38,16 +38,16 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "GAS Companion|Ability System")
 	EGameplayEffectReplicationMode ReplicationMode = EGameplayEffectReplicationMode::Mixed;
 
-	UPROPERTY(Category = Character, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(Category = Enemy, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	class UGSCCoreComponent* GSCCoreComponent;
 
-	UPROPERTY(Category = Character, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(Category = Enemy, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	class UGSCAbilitySystemComponent* AbilitySystemComponent;
 
-	UPROPERTY(Category = Character, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(Category = Enemy, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	class UCustomDitItHitActorComponent* CustomDitItHitActorComponent;
 
-	UPROPERTY(Category = Character, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(Category = Enemy, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	class UCombatSystemComponent* CombatSystemComponent;
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
@@ -55,4 +55,12 @@ public:
 	virtual UCustomDitItHitActorComponent* GetDitItHit() const override;
 
 	virtual UCombatSystemComponent* GetCombatSystemComponent() const override;
+
+public:
+
+	UPROPERTY(Category = Enemy, EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<class UUserWidget> HealthWidgetClass;
+
+	UPROPERTY(Category = Enemy, VisibleAnywhere, BlueprintReadOnly)
+	class UUserWidget* healthWidget;
 };

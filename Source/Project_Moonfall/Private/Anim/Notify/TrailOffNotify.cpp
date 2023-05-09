@@ -7,7 +7,6 @@
 
 void UTrailOffNotify::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation)
 {
-	Super::Notify(MeshComp, Animation);
 	auto owner = MeshComp->GetAnimInstance()->TryGetPawnOwner();
 	auto CombatInterface = Cast<ICombatInterface>(owner);
 	if (CombatInterface)
