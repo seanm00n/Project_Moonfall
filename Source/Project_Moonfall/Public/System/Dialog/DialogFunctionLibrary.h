@@ -15,9 +15,6 @@ struct FDialog {
 	GENERATED_BODY();
 	public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Input)
-	UTexture Picture;
-		
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Input)
 	FString name;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Input)
