@@ -32,7 +32,10 @@ void ABaseEnemy::PreInitializeComponents()
 void ABaseEnemy::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	/*if (HealthWidgetClass) {
+		healthWidget = CreateWidget<>(GetWorld(), HealthWidgetClass);
+		healthWidget->AddToViewport();
+	}*/
 }
 
 // Called every frame

@@ -7,9 +7,12 @@
 #include "System/CustomDitItHitActorComponent.h"
 void UTraceOffNotify::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation)
 {
-	auto DitItHitInterface = Cast<IDitItHitCompInterface>(MeshComp->GetAnimInstance()->TryGetPawnOwner());
+	auto owner = MeshComp->GetAnimInstance()->TryGetPawnOwner();
+	auto DitItHitInterface = Cast<IDitItHitCompInterface>(owner);
 	if (DitItHitInterface) {
 		auto TraceComp = DitItHitInterface->GetDitItHit();
 		TraceComp->ToggleTraceCheck(false);
 	}
+
+	
 }
