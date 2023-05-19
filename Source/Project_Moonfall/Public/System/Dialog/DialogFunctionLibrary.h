@@ -14,6 +14,10 @@ USTRUCT(BlueprintType)
 struct FDialog {
 	GENERATED_BODY();
 	public:
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Input)
+	UTexture2D* picture;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Input)
 	FString name;
 
