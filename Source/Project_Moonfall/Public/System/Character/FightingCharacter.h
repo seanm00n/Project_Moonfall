@@ -7,6 +7,7 @@
 #include "AbilitySystemInterface.h"
 #include "System/DitItHitCompInterface.h"
 #include "System/CombatSystemInterface.h"
+#include "System/Combat/CombatInterface.h"
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
 #include "FightingCharacter.generated.h"
@@ -41,7 +42,7 @@ public:
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnMouseLeftEvent);
 
 UCLASS(config=Game, Blueprintable)
-class PROJECT_MOONFALL_API AFightingCharacter : public ACharacter, public IAbilitySystemInterface ,public IDitItHitCompInterface,public ICombatSystemInterface
+class PROJECT_MOONFALL_API AFightingCharacter : public ACharacter, public IAbilitySystemInterface ,public IDitItHitCompInterface,public ICombatSystemInterface, public ICombatInterface
 {
 	GENERATED_BODY()
 
