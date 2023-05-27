@@ -22,7 +22,6 @@ ABaseEnemy::ABaseEnemy()
 
 	CombatSystemComponent = CreateDefaultSubobject<UCombatSystemComponent>(TEXT("CombatSystemComponent"));
 
-	Mesh
 }
 
 void ABaseEnemy::PreInitializeComponents()
