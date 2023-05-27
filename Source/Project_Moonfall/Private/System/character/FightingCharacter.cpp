@@ -66,11 +66,6 @@ AFightingCharacter::AFightingCharacter(const FObjectInitializer& ObjectInitializ
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 
-	tempCommand.name = "Temp Command";
-	tempCommand.inputs.Add("A");
-	tempCommand.inputs.Add("B");
-	tempCommand.inputs.Add("C");
-	hasUsedTempCommand = false;
 
 	isRun = false;
 }

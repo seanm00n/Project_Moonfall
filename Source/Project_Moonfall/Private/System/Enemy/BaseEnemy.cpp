@@ -21,6 +21,8 @@ ABaseEnemy::ABaseEnemy()
 	CustomDitItHitActorComponent = CreateDefaultSubobject<UCustomDitItHitActorComponent>(TEXT("CustomDitItHitComponent"));
 
 	CombatSystemComponent = CreateDefaultSubobject<UCombatSystemComponent>(TEXT("CombatSystemComponent"));
+
+	Mesh
 }
 
 void ABaseEnemy::PreInitializeComponents()
