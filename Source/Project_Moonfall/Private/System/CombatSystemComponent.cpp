@@ -127,13 +127,17 @@ void UCombatSystemComponent::TakeAttackOnlyEffect(AActor* Target)
 
 void UCombatSystemComponent::AttackInfo(const FAttackInfo& AttackInfo)
 {
-	CurrentAttackEffect = AttackInfo.Effect;
-	CurrentReactAbility = AttackInfo.Ability;
+	if (AttackInfo.Effect != nullptr)
+		CurrentAttackEffect = AttackInfo.Effect;
+	if (AttackInfo.Ability != nullptr)
+		CurrentReactAbility = AttackInfo.Ability;
 }
 
 void UCombatSystemComponent::AttackInfo(TSubclassOf<UGameplayEffect> AttackEffect, TSubclassOf<UGameplayAbility> ReactAbility)
 {
+	if (AttackEffect != nullptr)
 	CurrentAttackEffect = AttackEffect;
+	if (ReactAbility != nullptr)
 	CurrentReactAbility = ReactAbility;
 }
 
