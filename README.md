@@ -3,7 +3,7 @@
 - Made with Unreal Engine 5
 - 2023.03.07 ~ 2023.06.15
 # Preview
-- ![KakaoTalk_20230724_151558127](https://github.com/seanm00n/Project_Moonfall/assets/65546962/a19f8f28-adc9-4b22-a827-e6cd16d560b3)
+![KakaoTalk_20230724_151558127](https://github.com/seanm00n/Project_Moonfall/assets/65546962/a19f8f28-adc9-4b22-a827-e6cd16d560b3)
 # Memeber
 - Lee Sunmin (PM)
 - Seo Minseok (Game designer)
